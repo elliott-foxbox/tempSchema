@@ -1,0 +1,324 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.org/accme-pars-learner-reports.schema.json",
+	"title": "Activity Report Schemas",
+	"description": "JSON Schema mapping for activity reports and ACCMELearnerReports (with file-level attributes).",
+	"properties": {
+		"ACCMELearnerReports": {
+			"type": "object",
+			"description": "Super root element container for all learner records.",
+			"properties": {
+				"ActivityReports": {
+					"type": "object",
+					"properties": {
+						"DateTimeCreated": {
+							"type": "string",
+							"format": "date-time",
+							"description": "The date and time the current LearnerReports file was created. Format: yyyy-mm-ddThh:mm:ss (assumed CST if no timezone)"
+						},
+						"ActivityReport": {
+							"type": "array",
+							"description": "Each element represents one learner completion record.",
+							"minItems": 1,
+							"items": {
+								"type": "object",
+								"properties": {
+									"ReportingOrganization": {
+										"type": "string",
+										"description": "Name of the organization that is the accredited provider of the CME activity."
+									},
+									"Member": {
+										"type": "object",
+										"description": "Container for learner identification information.",
+										"properties": {
+											"Name": {
+												"type": "object",
+												"description": "Learner’s name.",
+												"properties": {
+													"GivenName": {
+														"type": "string",
+														"description": "First name of the learner."
+													},
+													"FamilyName": {
+														"type": "string",
+														"description": "Last name of the learner."
+													}
+												},
+												"required": [
+													"GivenName",
+													"FamilyName"
+												]
+											},
+											"PersonalInfo": {
+												"type": "object",
+												"description": "Optional personal information.",
+												"properties": {
+													"BirthDate": {
+														"type": "string",
+														"description": "Learner’s birth date. Format: YYYY-MM-DD",
+														"pattern": "^(\\d{4}-\\d{2}-\\d{2})$"
+													}
+												},
+												"additionalProperties": false
+											}
+										},
+										"required": [
+											"Name"
+										]
+									},
+									"Participants": {
+										"type": "object",
+										"description": "Optional container used only for REMS-registered activities.",
+										"properties": {
+											"Participant": {
+												"type": "object",
+												"description": "Demographic details for a single learner (REMS only).",
+												"properties": {
+													"LocalIdentifier": {
+														"type": "object",
+														"description": "An internal alphanumeric learner identifier.",
+														"properties": {
+															"value": {
+																"type": "string"
+															},
+															"domain": {
+																"type": "string",
+																"description": "Format: idd:domainname:localidentifiertype",
+																"pattern": "^idd:[^:]+:[^:]+$"
+															}
+														},
+														"required": [
+															"value",
+															"domain"
+														]
+													},
+													"StateOfPrimaryPractice": {
+														"type": "string",
+														"description": "Full name of the state where the learner primarily practices."
+													},
+													"DEARegistration": {
+														"type": "string",
+														"description": "Type of DEA registration (e.g., Individual, Institutional)."
+													},
+													"Profession": {
+														"type": "string",
+														"description": "Learner’s profession (e.g., Physician, Nurse)."
+													},
+													"PracticeArea": {
+														"type": "string",
+														"description": "The clinical area in which the learner practices (e.g., Anesthesiology)."
+													},
+													"SurgicalProcedures": {
+														"type": "boolean",
+														"description": "Indicates whether the learner performs surgical procedures."
+													},
+													"TimeInPractice": {
+														"type": "string",
+														"description": "The length of time the learner has been in practice."
+													}
+												},
+												"required": [
+													"LocalIdentifier",
+													"Profession"
+												]
+											}
+										},
+										"additionalProperties": false
+									},
+									"Activity": {
+										"type": "object",
+										"description": "Container holding data for the learner’s completion of the CME activity.",
+										"properties": {
+											"ProviderOrganization": {
+												"type": "string",
+												"description": "ACCME-issued 7-digit provider ID (leading zeroes allowed)."
+											},
+											"RegulatoryInformation": {
+												"type": "object",
+												"description": "Optional required for REMS. Contains regulation compliance information.",
+												"properties": {
+													"CompliantToRegulation": {
+														"type": "object",
+														"description": "Indicates compliance to a specific regulation.",
+														"properties": {
+															"label": {
+																"type": "string",
+																"description": "Label for the regulation. For Opioid REMS, use 'Opioid REMS'.",
+																"enum": [
+																	"Opioid REMS"
+																]
+															},
+															"value": {
+																"type": "string",
+																"format": "uri",
+																"description": "URL to the regulation documentation."
+															}
+														},
+														"required": [
+															"label",
+															"value"
+														]
+													}
+												},
+												"additionalProperties": false
+											},
+											"Module": {
+												"type": "object",
+												"description": "Contains data elements for the learner’s completion details.",
+												"properties": {
+													"ModuleName": {
+														"type": "object",
+														"description": "Name of the CME activity with a unique module ID.",
+														"properties": {
+															"value": {
+																"type": "string",
+																"description": "Text name/title of the CME activity."
+															},
+															"moduleID": {
+																"type": "string",
+																"description": "ACCME-issued 9-digit Activity ID."
+															}
+														},
+														"required": [
+															"value",
+															"moduleID"
+														]
+													},
+													"Status": {
+														"type": "string",
+														"description": "The status of the learner’s completion. Only accepted value is 'Completed'.",
+														"enum": [
+															"Completed"
+														]
+													},
+													"CompletedDateTime": {
+														"type": "string",
+														"format": "date-time",
+														"description": "Date and time when the activity was completed. Format: YYYY-MM-DDThh:mm:ss"
+													},
+													"CreditCertificate": {
+														"type": "array",
+														"description": "Array of credit certificates awarded. At least one must be present.",
+														"minItems": 1,
+														"items": {
+															"type": "object",
+															"properties": {
+																"UniqueID": {
+																	"type": "object",
+																	"description": "NPI, Learner’s board or licensing identifier(s). Each item must include a domain attribute and a value.",
+																	"items": {
+																		"type": "object",
+																		"properties": {
+																			"value": {
+																				"type": "string",
+																				"description": "The learner’s identification number (NPI or a board or state license)."
+																			},
+																			"domain": {
+																				"type": "string",
+																				"description": "The NPI, certifying board or licensing state code (e.g. NPI, ABIM, ABA, CA, NY, etc.)."
+																			}
+																		},
+																		"required": [
+																			"value",
+																			"domain"
+																		]
+																	}
+																},
+																"CreditReceived": {
+																	"type": "object",
+																	"description": "Describes the credit points awarded.",
+																	"properties": {
+																		"activityCertification": {
+																			"type": "string",
+																			"description": "The category of points being awarded. (See board-specific values.)"
+																		},
+																		"creditUnit": {
+																			"type": "string",
+																			"description": "Unit of credit. Only accepted value is 'Point'.",
+																			"enum": [
+																				"Point"
+																			]
+																		},
+																		"numberOfCredits": {
+																			"type": "number",
+																			"description": "Number of credits awarded (decimal value in increments of 0.25).",
+																			"multipleOf": 0.25
+																		}
+																	},
+																	"required": [
+																		"activityCertification",
+																		"creditUnit",
+																		"numberOfCredits"
+																	]
+																},
+																"CreditID": {
+																	"type": "string",
+																	"description": "Unique identifier for the credit awarded (URN format, max 300 characters).",
+																	"maxLength": 300,
+																	"pattern": "^ccid:[^:]+:[^:]+$"
+																}
+															},
+															"required": [
+																"UniqueID"
+																"CreditReceived",
+																"CreditID"
+															]
+														}
+													}
+												},
+												"required": [
+													"ModuleName",
+													"Status",
+													"CompletedDateTime",
+													"CreditCertificate"
+												]
+											}
+										},
+										"required": [
+											"ProviderOrganization",
+											"Module"
+										]
+									},
+									"XtensibleInfo": {
+										"type": "object",
+										"description": "Container for custom elements added by ACCME.",
+										"properties": {
+											"LearnerRecordAction": {
+												"type": "string",
+												"description": "Specifies the data transaction for the record. Use 'add' for new completions or 'delete' for removals.",
+												"enum": [
+													"add",
+													"delete"
+												]
+											}
+										},
+										"required": [
+											"LearnerRecordAction"
+										]
+									}
+								},
+								"required": [
+									"ReportingOrganization",
+									"Member",
+									"Activity",
+									"XtensibleInfo"
+								],
+								"additionalProperties": false
+							}
+						}
+					},
+					"required": [
+						"DateTimeCreated",
+						"ActivityReport"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"ActivityReports"
+			],
+			"additionalProperties": false
+		}
+	},
+	"additionalProperties": false
+}
