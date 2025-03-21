@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LearnerTranscript",
+  "description": "Schema for the response of GetLearnerTranscriptbyLearner, aligned with ACCME PARS Learner Reports",
+  "type": "object",
+  "properties": {
+    "learners": {
+      "type": "array",
+      "description": "An array of learner transcript records.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "learnerInfo": {
+            "type": "object",
+            "description": "Identifying information about the learner.",
+            "properties": {
+              "GivenName": {
+                "type": "string",
+                "description": "Learner's first name.",
+              },
+              "FamilyName": {
+                "type": "string",
+                "description": "Learner's last name.",
+              },
+              "stateOfLicensure": {
+                "type": "string",
+                "description": "State where the learner is licensed (e.g., 'CA', 'NY').",
+                "pattern": "^[A-Z]{2}$",
+                "$comment": "Potentially maps to StateOfPrimaryPractice (but needs full state name)"
+              },
+              "stateMedicalLicenseID": {
+                "type": "string",
+                "description": "Learner's state medical license ID.",
+                "$comment": "Could be mapped to a UniqueID.value with domain set to the state abbreviation"
+              },
+              "npi": {
+                "type": "string",
+                "description": "Learner's National Provider Identifier.",
+                "pattern": "^[0-9]{10}$",
+              }
+            },
+            "required": [
+              "firstName",
+              "lastName"
+            ]
+          },
+          "transcriptRecords": {
+            "type": "array",
+            "description": "An array of CME transcript records for this learner.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "activityTitle": {
+                  "type": "string",
+                  "description": "Title of the CME activity.",
+                  "$comment": "Maps to ModuleName.value"
+                },
+                "completionDate": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date the activity was completed (YYYY-MM-DD).",
+                    "$comment": "Part of the completed date"
+                },
+                "completionDateTime": {
+                   "type": "string",
+                  "format": "date-time",
+                  "description": "Date and time when activity completed. YYYY-MM-DDThh:mm:ss",
+                   "$comment": "Maps to CompletedDateTime"
+                },
+                "creditsEarned": {
+                  "type": "number",
+                  "description": "Number of CME credits earned.",
+                  "minimum": 0,
+                   "multipleOf": 0.25,
+                  "$comment": "Maps to CreditCertificate.CreditReceived.numberOfCredits"
+                },
+                "activityType": {
+                  "type": "string",
+                  "description": "Type of CME activity.",
+                    "$comment": "Could be mapped to an xtensible area"
+                },
+                "ReportingOrganization": {
+                  "type": "string",
+                  "description": "Name of the organization providing the CME activity.",
+                },
+                "ProviderOrganization": {
+                  "type": "string",
+                  "description": "ACCME-issued 7-digit provider ID (leading zeroes allowed).",
+                   "pattern": "^[0-9]{7}$",
+                },
+                "activityId": {
+                  "type": "string",
+                  "description": "ACCME-issued 9-digit Activity ID.",
+                  "pattern": "^[0-9]{9}$",
+                   "$comment": "Maps to ModuleName.moduleID"
+                },
+                "creditId": {
+                  "type": "string",
+                  "description": "Unique ID for the credit",
+                  "maxLength": 300,
+                  "pattern": "^ccid:[^:]+:[^:]+$",
+                  "$comment":"Maps to CreditCertificate.CreditID"
+                },
+                 "creditUnit": {
+                    "type": "string",
+                    "description": "Unit for credit (always point)",
+                      "enum": [
+                        "Point"
+                      ],
+                      "$comment": "Maps to CreditCertificate.CreditRecieved.creditUnit"
+                 },
+                "activityCertification": {
+                    "type": "string",
+                    "description": "Category of points being awarded.",
+                      "$comment": "Maps to CreditCertificate.CreditRecieved.activityCertification"
+                 },
+                "status": {
+                    "type": "string",
+                    "description": "Status of the activity for this learner.",
+                      "enum": [
+                          "Completed"
+                      ],
+                      "$comment": "Maps to Module.Status"
+                }
+              },
+              "required": [
+                "activityTitle",
+                "completionDate",
+                "creditsEarned",
+                "providerId",
+                "activityId",
+                "completionDateTime",
+                "creditId",
+                "creditUnit",
+                "activityCertification",
+                "status"
+              ]
+            }
+          }
+        },
+        "required": [
+          "learnerInfo",
+          "transcriptRecords"
+        ]
+      }
+    }
+  },
+  "required": [
+    "learners"
+  ]
+}
