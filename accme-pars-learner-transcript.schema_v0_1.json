@@ -1,171 +1,205 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.org/accme-pars-learner-transcript.schema.json",
-  "title": "ACCME Learner Transcript Schema",
-  "description": "Schema for learner transcripts, aligned with ACCME PARS Learner Reports conventions.",
-  "type": "object",
-  "properties": {
-    "ACCMETranscripts": {
-      "type": "array",
-      "description": "An array of learner transcript records.",
-      "items": {
-        "type": "object",
-        "properties": {
-          "Member": {
-            "type": "object",
-            "description": "Container for learner identification information.",
-            "properties": {
-              "Name": {
-                "type": "object",
-                "description": "Learner’s name.",
-                "properties": {
-                  "GivenName": {
-                    "type": "string",
-                    "description": "First name of the learner."
-                  },
-                  "FamilyName": {
-                    "type": "string",
-                    "description": "Last name of the learner."
-                  }
-                },
-                "required": ["GivenName", "FamilyName"]
-              },
-              "PersonalInfo": {
-                "type": "object",
-                "description": "Optional personal information.",
-                "properties": {
-                  "StateOfLicensure": {
-                    "type": "string",
-                    "description": "State where the learner is licensed (e.g., 'CA', 'NY').",
-                    "pattern": "^[A-Z]{2}$"
-                  },
-                  "StateMedicalLicenseID": {
-                    "type": "string",
-                    "description": "Learner's state medical license ID."
-                  },
-                  "NPI": {
-                    "type": "string",
-                    "description": "Learner's National Provider Identifier.",
-                    "pattern": "^[0-9]{10}$"
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "required": ["Name"]
-          },
-          "ActivityTranscript": {
-            "type": "array",
-            "description": "An array of CME transcript records for this learner.",
-            "items": {
-              "type": "object",
-              "properties": {
-                "Activity": {
-                  "type": "object",
-                  "description": "Container holding data for the learner’s completion of the CME activity.",
-                  "properties": {
-                    "ProviderOrganization": {
-                      "type": "string",
-                      "description": "ACCME-issued 7-digit provider ID (leading zeroes allowed).",
-                      "pattern": "^[0-9]{7}$"
-                    },
-                    "ReportingOrganization": {
-                      "type": "string",
-                      "description": "Name of the organization providing the CME activity."
-                    },
-                    "Module": {
-                      "type": "object",
-                      "description": "Details about the CME activity.",
-                      "properties": {
-                        "ModuleName": {
-                          "type": "object",
-                          "properties": {
-                            "value": {
-                              "type": "string",
-                              "description": "Text name/title of the CME activity."
-                            },
-                            "moduleID": {
-                              "type": "string",
-                              "description": "ACCME-issued 9-digit Activity ID.",
-                              "pattern": "^[0-9]{9}$"
-                            }
-                          },
-                          "required": ["value", "moduleID"]
-                        },
-                        "Status": {
-                          "type": "string",
-                          "description": "The status of the learner’s completion.",
-                          "enum": ["Completed"]
-                        },
-                        "CompletedDateTime": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "Date and time when the activity was completed. Format: YYYY-MM-DDThh:mm:ss"
-                        },
-                        "CreditCertificate": {
-                          "type": "array",
-                          "description": "Array of credit certificates awarded.",
-                          "minItems": 1,
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "CreditID": {
-                                "type": "string",
-                                "description": "Unique identifier for the credit awarded.",
-                                "maxLength": 300,
-                                "pattern": "^ccid:[^:]+:[^:]+$"
-                              },
-                              "CreditReceived": {
-                                "type": "object",
-                                "properties": {
-                                  "activityCertification": {
-                                    "type": "string",
-                                    "description": "The category of points being awarded."
-                                  },
-                                  "creditUnit": {
-                                    "type": "string",
-                                    "enum": ["Point"],
-                                    "description": "Unit of credit."
-                                  },
-                                  "numberOfCredits": {
-                                    "type": "number",
-                                    "minimum": 0,
-                                    "multipleOf": 0.25,
-                                    "description": "Number of credits awarded."
-                                  }
-                                },
-                                "required": ["activityCertification", "creditUnit", "numberOfCredits"]
-                              }
-                            },
-                            "required": ["CreditID", "CreditReceived"]
-                          }
-                        }
-                      },
-                      "required": ["ModuleName", "Status", "CompletedDateTime", "CreditCertificate"]
-                    }
-                  },
-                  "required": ["ProviderOrganization", "Module"]
-                }
-              },
-              "required": ["Activity"]
-            }
-          },
-          "XtensibleInfo": {
-            "type": "object",
-            "description": "Container for custom elements added by ACCME.",
-            "properties": {
-              "Notes": {
-                "type": "string",
-                "description": "Optional notes or annotations."
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "required": ["Member", "ActivityTranscript"]
-      }
-    }
-  },
-  "required": ["ACCMETranscripts"],
-  "additionalProperties": false
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.org/accme-pars-learner-transcript.schema.json",
+	"title": "ACCME Learner Transcript Schema",
+	"description": "Schema for learner transcripts, aligned with ACCME PARS Learner Reports conventions.",
+	"type": "object",
+	"properties": {
+		"ACCMETranscripts": {
+			"type": "array",
+			"description": "An array of learner transcript records.",
+			"items": {
+				"type": "object",
+				"properties": {
+					"Member": {
+						"type": "object",
+						"description": "Container for learner identification information.",
+						"properties": {
+							"Name": {
+								"type": "object",
+								"description": "Learner’s name.",
+								"properties": {
+									"GivenName": {
+										"type": "string",
+										"description": "First name of the learner."
+									},
+									"FamilyName": {
+										"type": "string",
+										"description": "Last name of the learner."
+									}
+								},
+								"required": [
+									"GivenName",
+									"FamilyName"
+								]
+							},
+							"PersonalInfo": {
+								"type": "object",
+								"description": "Optional personal information.",
+								"properties": {
+									"StateOfLicensure": {
+										"type": "string",
+										"description": "State where the learner is licensed (e.g., 'CA', 'NY').",
+										"pattern": "^[A-Z]{2}$"
+									},
+									"StateMedicalLicenseID": {
+										"type": "string",
+										"description": "Learner's state medical license ID."
+									},
+									"NPI": {
+										"type": "string",
+										"description": "Learner's National Provider Identifier.",
+										"pattern": "^[0-9]{10}$"
+									}
+								},
+								"additionalProperties": false
+							}
+						},
+						"required": [
+							"Name"
+						]
+					},
+					"ActivityTranscript": {
+						"type": "array",
+						"description": "An array of CME transcript records for this learner.",
+						"items": {
+							"type": "object",
+							"properties": {
+								"Activity": {
+									"type": "object",
+									"description": "Container holding data for the learner’s completion of the CME activity.",
+									"properties": {
+										"ProviderOrganization": {
+											"type": "string",
+											"description": "ACCME-issued 7-digit provider ID (leading zeroes allowed).",
+											"pattern": "^[0-9]{7}$"
+										},
+										"ReportingOrganization": {
+											"type": "string",
+											"description": "Name of the organization providing the CME activity."
+										},
+										"Module": {
+											"type": "object",
+											"description": "Details about the CME activity.",
+											"properties": {
+												"ModuleName": {
+													"type": "object",
+													"properties": {
+														"value": {
+															"type": "string",
+															"description": "Text name/title of the CME activity."
+														},
+														"moduleID": {
+															"type": "string",
+															"description": "ACCME-issued 9-digit Activity ID.",
+															"pattern": "^[0-9]{9}$"
+														}
+													},
+													"required": [
+														"value",
+														"moduleID"
+													]
+												},
+												"Status": {
+													"type": "string",
+													"description": "The status of the learner’s completion.",
+													"enum": [
+														"Completed"
+													]
+												},
+												"CompletedDateTime": {
+													"type": "string",
+													"format": "date-time",
+													"description": "Date and time when the activity was completed. Format: YYYY-MM-DDThh:mm:ss"
+												},
+												"CreditCertificate": {
+													"type": "array",
+													"description": "Array of credit certificates awarded.",
+													"minItems": 1,
+													"items": {
+														"type": "object",
+														"properties": {
+															"CreditID": {
+																"type": "string",
+																"description": "Unique identifier for the credit awarded.",
+																"maxLength": 300,
+																"pattern": "^ccid:[^:]+:[^:]+$"
+															},
+															"CreditReceived": {
+																"type": "object",
+																"properties": {
+																	"activityCertification": {
+																		"type": "string",
+																		"description": "The category of points being awarded."
+																	},
+																	"creditUnit": {
+																		"type": "string",
+																		"enum": [
+																			"Point"
+																		],
+																		"description": "Unit of credit."
+																	},
+																	"numberOfCredits": {
+																		"type": "number",
+																		"minimum": 0,
+																		"multipleOf": 0.25,
+																		"description": "Number of credits awarded."
+																	}
+																},
+																"required": [
+																	"activityCertification",
+																	"creditUnit",
+																	"numberOfCredits"
+																]
+															}
+														},
+														"required": [
+															"CreditID",
+															"CreditReceived"
+														]
+													}
+												}
+											},
+											"required": [
+												"ModuleName",
+												"Status",
+												"CompletedDateTime",
+												"CreditCertificate"
+											]
+										}
+									},
+									"required": [
+										"ProviderOrganization",
+										"Module"
+									]
+								}
+							},
+							"required": [
+								"Activity"
+							]
+						}
+					},
+					"XtensibleInfo": {
+						"type": "object",
+						"description": "Container for custom elements added by ACCME.",
+						"properties": {
+							"Notes": {
+								"type": "string",
+								"description": "Optional notes or annotations."
+							}
+						},
+						"additionalProperties": false
+					}
+				},
+				"required": [
+					"Member",
+					"ActivityTranscript"
+				]
+			}
+		}
+	},
+	"required": [
+		"ACCMETranscripts"
+	],
+	"additionalProperties": false
 }
