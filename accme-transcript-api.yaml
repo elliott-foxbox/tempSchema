@@ -1,0 +1,149 @@
+openapi: 3.1.0
+info:
+  title: Transcript API
+  version: 1.0.0
+  description: API for retrieving CME transcripts for regulators, accreditors, and credentialing departments.
+
+paths:
+  /GetLearnerTranscriptbyLearner:
+    get:
+      summary: Get learner transcript data as JSON
+      description: Retrieves CME transcript records for learners matching the search criteria.
+      operationId: getLearnerTranscript
+      parameters:
+        - in: query
+          name: firstName
+          schema:
+            type: string
+          description: Learner's first name.
+        - in: query
+          name: lastName
+          schema:
+            type: string
+          description: Learner's last name.
+        - in: query
+          name: stateOfLicensure
+          schema:
+            type: string
+            pattern: "^[A-Z]{2}$"
+          description: Two-letter state code of licensure.
+        - in: query
+          name: stateMedicalLicenseID
+          schema:
+            type: string
+          description: Learner's state medical license ID.
+        - in: query
+          name: npi
+          schema:
+            type: string
+            pattern: "^[0-9]{10}$"
+          description: Learner's National Provider Identifier (10 digits).
+        - in: query
+          name: completionDateRangeStart
+          schema:
+            type: string
+            format: date
+          description: Start date of the completion date range (YYYY-MM-DD).
+        - in: query
+          name: completionDateRangeEnd
+          schema:
+            type: string
+            format: date
+          description: End date of the completion date range (YYYY-MM-DD).
+      responses:
+        '200':
+          description: Successful response - returns transcript data.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-transcript.schema_v0_1.json'
+        '400':
+          description: Bad request - invalid input parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - missing or invalid authentication credentials
+        '403':
+            description: Forbidden
+        '500':
+          description: Internal server error.
+
+  /GetLearnerTranscriptbyLearnerPDF:
+    get:
+      summary: Get learner transcript as PDF
+      description: Retrieves a formatted PDF transcript for learners matching the search criteria.
+      operationId: getLearnerTranscriptPDF
+      parameters:
+        - in: query
+          name: firstName
+          schema:
+            type: string
+          description: Learner's first name.
+        - in: query
+          name: lastName
+          schema:
+            type: string
+          description: Learner's last name.
+        - in: query
+          name: stateOfLicensure
+          schema:
+            type: string
+            pattern: "^[A-Z]{2}$"
+          description: Two-letter state code of licensure.
+        - in: query
+          name: stateMedicalLicenseID
+          schema:
+            type: string
+          description: Learner's state medical license ID.
+        - in: query
+          name: npi
+          schema:
+            type: string
+            pattern: "^[0-9]{10}$"
+          description: Learner's National Provider Identifier (10 digits).
+        - in: query
+          name: completionDateRangeStart
+          schema:
+            type: string
+            format: date
+          description: Start date of the completion date range (YYYY-MM-DD).
+        - in: query
+          name: completionDateRangeEnd
+          schema:
+            type: string
+            format: date
+          description: End date of the completion date range (YYYY-MM-DD).
+      responses:
+        '200':
+          description: Successful response - returns a PDF transcript.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request - invalid input parameters.
+          content:
+             application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - missing or invalid authentication credentials
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error.
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description:  Error Code
+        message:
+          type: string
+          description: Error message.
