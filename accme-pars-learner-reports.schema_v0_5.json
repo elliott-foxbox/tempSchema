@@ -98,15 +98,60 @@
 													},
 													"DEARegistration": {
 														"type": "string",
-														"description": "Type of DEA registration (e.g., Individual, Institutional)."
+														"description": "Type of DEA registration (e.g., Individual, Institutional).",
+														"enum": [
+															"Individual",
+															"Institutional",
+															"None"
+														]
 													},
 													"Profession": {
 														"type": "string",
-														"description": "Learner’s profession (e.g., Physician, Nurse)."
+														"description": "Learner’s profession (e.g., Physician, Nurse).",
+														"enum": [
+															"Physician",
+															"Advanced practice nurse",
+															"Physician Assistant",
+															"Dentist",
+															"Podiatrist",
+															"Nurse",
+															"Pharmacist",
+															"Optometrist",
+															"Psychologist",
+															"Veterinarian",
+															"Other healthcare professional",
+															"Other"
+														]
 													},
 													"PracticeArea": {
 														"type": "string",
-														"description": "The clinical area in which the learner practices (e.g., Anesthesiology)."
+														"description": "The clinical area in which the learner practices (e.g., Anesthesiology).",
+														"enum": [
+															"Addiction",
+															"Anesthesiology",
+															"Critical Care",
+															"Dentistry",
+															"Emergency",
+															"Family Medicine",
+															"Geriatric",
+															"Hematology",
+															"Hospice and/or Palliative Care",
+															"Internal Medicine",
+															"Neurology",
+															"Obstetrics/Gynecology",
+															"Oncology",
+															"Ophthalmology",
+															"Pain",
+															"Pediatric",
+															"Physical Medicine and Rehabilitation",
+															"Psychiatry",
+															"General Surgery",
+															"Orthopedic surgery",
+															"Other surgical specialty",
+															"Urology",
+															"Other",
+															"N/A"
+														]
 													},
 													"SurgicalProcedures": {
 														"type": "boolean",
@@ -114,7 +159,15 @@
 													},
 													"TimeInPractice": {
 														"type": "string",
-														"description": "The length of time the learner has been in practice."
+														"description": "The length of time the learner has been in practice.",
+														"enum": [
+															"Trainee",
+															"0-5 years post training",
+															"6-10 years",
+															"11-15 years",
+															"16-20 years",
+															"21+ years"
+														]
 													}
 												},
 												"required": [
