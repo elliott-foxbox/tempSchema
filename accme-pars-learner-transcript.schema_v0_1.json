@@ -16,11 +16,11 @@
             "properties": {
               "GivenName": {
                 "type": "string",
-                "description": "Learner's first name.",
+                "description": "Learner's first name."
               },
               "FamilyName": {
                 "type": "string",
-                "description": "Learner's last name.",
+                "description": "Learner's last name."
               },
               "stateOfLicensure": {
                 "type": "string",
@@ -36,7 +36,7 @@
               "npi": {
                 "type": "string",
                 "description": "Learner's National Provider Identifier.",
-                "pattern": "^[0-9]{10}$",
+                "pattern": "^[0-9]{10}$"
               }
             },
             "required": [
@@ -81,12 +81,12 @@
                 },
                 "ReportingOrganization": {
                   "type": "string",
-                  "description": "Name of the organization providing the CME activity.",
+                  "description": "Name of the organization providing the CME activity."
                 },
                 "ProviderOrganization": {
                   "type": "string",
                   "description": "ACCME-issued 7-digit provider ID (leading zeroes allowed).",
-                   "pattern": "^[0-9]{7}$",
+                   "pattern": "^[0-9]{7}$"
                 },
                 "activityId": {
                   "type": "string",
