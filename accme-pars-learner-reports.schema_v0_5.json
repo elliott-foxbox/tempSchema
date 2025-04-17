@@ -336,6 +336,10 @@
 										"type": "object",
 										"description": "Container for custom elements added by ACCME.",
 										"properties": {
+											"ProviderID": {
+												"type": "string",
+												"description": "Web services provider identifier"
+											}
 											"LearnerRecordAction": {
 												"type": "string",
 												"description": "Specifies the data transaction for the record. Use 'add' for new completions or 'delete' for removals.",

@@ -1,0 +1,145 @@
+openapi: 3.1.0
+info:
+  title: ACCME Learner Activity API
+  version: "1.0.0"
+  description: >
+    API for saving, retrieving, matching, deleting learner activity reports,
+    and retrieving learner status. This specification supports the latest
+    ACCMELearnerReports schema.
+paths:
+  /learner-activities:
+    post:
+      summary: Save a Learner Activity Report
+      operationId: saveLearnerActivity
+      requestBody:
+        description: Learner activity report document conforming to the latest ACCMELearnerReports schema.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json'
+      responses:
+        '201':
+          description: Learner activity report saved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json'
+        '400':
+          description: Invalid input.
+  /learner-activities/{learnerId}:
+    get:
+      summary: Get a Learner Activity Report by Learner ID
+      operationId: getLearnerActivity
+      parameters:
+        - name: learnerId
+          in: path
+          description: The unique learner identifier (e.g. a value from Member.UniqueID).
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Learner activity record retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json'
+        '404':
+          description: Learner activity record not found.
+    delete:
+      summary: Delete a Learner Activity Report by Learner ID
+      operationId: deleteLearnerActivity
+      parameters:
+        - name: learnerId
+          in: path
+          description: The unique learner identifier for the report to be deleted.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Learner activity report deleted successfully.
+        '404':
+          description: Learner activity report not found.
+  /learner-activities/status:
+    get:
+      summary: Get Learner Status
+      description: >
+        Retrieve the learner status using one of two approaches:
+        
+        **Approach A:** Provide a combination of:
+          - **moduleID**: The activity identifier (e.g. from Module.ModuleName.moduleID).
+          - **BirthDate**: The learner's birth date (format YYYY-MM-DD or MM-DD).
+          - **CompletionDate**: The date the activity was completed (format YYYY-MM-DD).
+          - **UniqueID**: The learner's unique identification number.
+        
+        **Approach B:** Provide:
+          - **CreditID**: The unique identifier for the credit awarded.
+      operationId: getLearnerStatus
+      parameters:
+        - name: moduleID
+          in: query
+          description: The activity identifier.
+          required: false
+          schema:
+            type: string
+        - name: BirthDate
+          in: query
+          description: Learner's birth date (format YYYY-MM-DD or MM-DD).
+          required: false
+          schema:
+            type: string
+        - name: CompletionDate
+          in: query
+          description: The completion date of the activity (format YYYY-MM-DD).
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: UniqueID
+          in: query
+          description: Learner's unique identification number.
+          required: false
+          schema:
+            type: string
+        - name: CreditId
+          in: query
+          description: The unique credit identifier (from the CreditCertificate array).
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Learner status successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    moduleID:
+                      $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json#/ACCMELearnerReports/ActivityReports/ActivityReport/Activity/Module/ModuleName/moduleID'
+                    BirthDate:
+                      $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json#/ACCMELearnerReports/ActivityReports/ActivityReport/Member/PersonalInfo/BirthDate'
+                    CompletedDateTime:
+                      $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json#/ACCMELearnerReports/ActivityReports/ActivityReport/Activity/Module/CreditCertificate/CompletedDateTime'
+                    CreditID:
+                      $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json#/ACCMELearnerReports/ActivityReports/ActivityReport/Activity/Module/CreditCertificate/CreditID'
+                    UniqueID:
+                      $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json#/ACCMELearnerReports/ActivityReports/ActivityReport/Activity/Module/CreditCertificate/UniqueID'
+                    Status:
+                      $ref: 'https://raw.githubusercontent.com/elliottACCME/tempSchema/main/accme-pars-learner-reports.schema_v0_4.json#/ACCMELearnerReports/ActivityReports/ActivityReport/Activity/Module/Status'
+              examples:
+                exampleMatchResponse:
+                  summary: Example Response for Learner Match
+                  value:
+                    - moduleID: "987654321"
+                      CompletedDateTime: "2024-05-01T10:30:00Z"
+                      UniqueID:
+                        - value: "123456789"
+                          domain: "ABIM"
+                      Status: "Completed"
+        '404':
+          description: Learner status not found.

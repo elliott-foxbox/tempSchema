@@ -158,6 +158,57 @@
 															"CreditReceived"
 														]
 													}
+												},
+												"DeliveryMethods": {
+													"type": "object",
+													"properties": {
+														"DeliveryMethod": {
+															"type": "array",
+															"items": {
+																"type": "string",
+																"description": "E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'."
+															}
+														}
+													}
+												},
+												"MOCRegistrations": {
+													"type": "object",
+													"properties": {
+														"MOCRegistration": {
+															"type": "array",
+															"description": "One entry per certifying board for which MOC is offered.",
+															"items": {
+																"type": "object",
+																"properties": {
+																	"boardName": {
+																		"type": "string",
+																		"enum": ["ABA","ABIM","ABOHNS","ABOS","ABP","ABPATH","ABS","ABTS"]
+																	},
+																	"mocPoints": {
+																		"type": "number",
+																		"description": "MOC/CC points (minimum increments of 0.25)."
+																	},
+																	"MOCCreditType": {
+																		"type": "array",
+																		"items": {
+																			"type": "string",
+																			"description": "Board-specific MOC credit type, see Appendix G."
+																		}
+																	},
+																	"CreditClaimDate": {
+																		"type": "string",
+																		"format": "date",
+																		"description": "Deadline date for learner MOC credit submissions (YYYY-MM-DD)."
+																	}
+																},
+																"required": [
+																	"boardName",
+																	"mocPoints",
+																	"MOCCreditType"
+																]
+															}
+														}
+													}
 												}
 											},
 											"required": [
@@ -183,6 +234,10 @@
 						"type": "object",
 						"description": "Container for custom elements added by ACCME.",
 						"properties": {
+							"ProviderID": {
+								"type": "string",
+								"description": "Web services provider identifier"
+							},
 							"Notes": {
 								"type": "string",
 								"description": "Optional notes or annotations."

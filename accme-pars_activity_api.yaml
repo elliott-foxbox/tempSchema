@@ -1,0 +1,2097 @@
+openapi: 3.1.0
+info:
+  title: ACCME PARS Activity API
+  version: 1.0.0
+  description: |
+    API for saving and retrieving ACCME PARS Activity data using the provided JSON schema. The schema describes the activity in accordance with the Medbiquitous MEMS XML specification and ACCME extensions.
+paths:
+  /activities:
+    post:
+      summary: Save an ACCME PARS Activity
+      operationId: createACCMEActivity
+      requestBody:
+        description: ACCME PARS Activity object to be saved.
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              $id: https://example.org/accme-pars-activity.schema.json
+              title: ACCME PARS Activity JSON Schema
+              description: |
+                JSON schema describing ACCME PARS Activity data, based on the Medbiquitous MEMS XML specification and ACCME extensions.
+              type: object
+              properties:
+                ACCMEActivities:
+                  type: object
+                  description: Root element that corresponds to the <ACCMEActivities> element in XML.
+                  properties:
+                    MedicalEducationMetrics:
+                      type: array
+                      description: |
+                        Array of <MedicalEducationMetrics> objects, each representing one activity record.
+                      items:
+                        type: object
+                        description: Container for a single activity’s data.
+                        properties:
+                          ReportDescription:
+                            type: object
+                            properties:
+                              ReportingStartDate:
+                                type: string
+                                formate: date
+                                description: |
+                                  Year portion should align with the activity start date (YYYY or YYYY-MM-DD).
+                              ReportingEndDate:
+                                type: string
+                                formate: date
+                                description: |
+                                  Year portion should align with the activity end date (YYYY or YYYY-MM-DD).
+                            required:
+                            - ReportingStartDate
+                            - ReportingEndDate
+                          ActivityDescription:
+                            type: object
+                            properties:
+                              commercialSupportAmount:
+                                type: array
+                                description: "Information about sources of commercial support, if any."
+                                items:
+                                  type: object
+                                  properties:
+                                    currency:
+                                      type: string
+                                      description: Typically 'USD'.
+                                    supportSource:
+                                      type: string
+                                      description: The name of the commercial supporter (see Appendix I).
+                                    value:
+                                      type: number
+                                      description: Whole number for the support amount.
+                                  required:
+                                  - currency
+                                  - supportSource
+                                  - value
+                          Lom:
+                            type: object
+                            description: Container for LOM general metadata.
+                            properties:
+                              general:
+                                type: object
+                                properties:
+                                  identifier:
+                                    type: array
+                                    description: |
+                                      Array of identifiers (Provider Activity ID, ACCME Activity ID, URL).
+                                    items:
+                                      type: object
+                                      properties:
+                                        catalog:
+                                          type: string
+                                          description: |
+                                            e.g., 'ACCME Activity ID', 'Provider Activity ID', or 'URL'.
+                                        entry:
+                                          type: string
+                                          description: Unique identifier value.
+                                      required:
+                                      - catalog
+                                      - entry
+                                  title:
+                                    type: string
+                                    description: Name of the learning activity.
+                                  description:
+                                    type: string
+                                    description: |
+                                      Free-text description of the activity content (max 2,500 characters).
+                                  keyword:
+                                    type: array
+                                    description: Used primarily for MOCA content outline (ABA).
+                                    items:
+                                      type: object
+                                      properties:
+                                        id:
+                                          type: string
+                                          description: "e.g. 'Level 3 ID', 'Tag ID', or 'Free Text'."
+                                        source:
+                                          type: string
+                                          description: |
+                                            Distinguishes 1st or 2nd MOCA content selection: '01_ABAMCO' or '02_ABAMCO'.
+                                        string:
+                                          type: string
+                                          description: |
+                                            Value for the keyword, e.g. MOCA Content Outline numeric code or free text.
+                                      required:
+                                      - id
+                                      - source
+                                      - string
+                                required:
+                                - identifier
+                                - title
+                                - description
+                          healthcareMetadata:
+                            type: object
+                            description: |
+                              Container for Healthcare LOM metadata. Typically houses the healthcareEducation sub-element.
+                            properties:
+                              healthcareEducation:
+                                type: object
+                                properties:
+                                  credits:
+                                    type: object
+                                    description: |
+                                      Container for specifying credits and other related fields.
+                                    properties:
+                                      activityCertification:
+                                        type: string
+                                        description: E.g. 'AMA PRA Category 1'
+                                      numberOfCredits:
+                                        type: number
+                                        description: Number of credits assigned to the activity.
+                                    required:
+                                    - activityCertification
+                                    - numberOfCredits
+                                  activityLocation:
+                                    type: object
+                                    properties:
+                                      city:
+                                        type: string
+                                      stateOrProvince:
+                                        type: string
+                                        description: |
+                                          Two-letter US state if country=USA (see Appendix D).
+                                      country:
+                                        type: string
+                                        description: |
+                                          Three-letter country code (see Appendix C).
+                                  startDateTime:
+                                    type: string
+                                    formate: date-time
+                                    description: |
+                                      Start date/time; time portion often ignored by ACCME (format'YYYY-MM-DDT00:00:00').
+                                  endDateTime:
+                                    type: string
+                                    formate: date-time
+                                    description: |
+                                      End date/time; time portion often ignored by ACCME.
+                                  activitySponsorship:
+                                    type: string
+                                    enum:
+                                    - direct
+                                    - joint
+                                  activityFormat:
+                                    type: string
+                                    description: |
+                                      One of the recognized ACCME activity types, e.g. 'Live Course', 'Enduring Material', etc.
+                                  commercialSupport:
+                                    type: boolean
+                                    description: |
+                                      True if there is commercial support; false if not.
+                                  targetAudience:
+                                    type: object
+                                    description: |
+                                      Used if registering for MOC. Contains the 'specialty' array.
+                                    properties:
+                                      specialty:
+                                        type: array
+                                        items:
+                                          type: string
+                                          description: |
+                                            Specialty or practice area (see Appendix F).
+                                required:
+                                - credits
+                                - startDateTime
+                                - endDateTime
+                                - activitySponsorship
+                                - activityFormat
+                            required:
+                            - healthcareEducation
+                          participationMetrics:
+                            type: object
+                            properties:
+                              participantsByCategory:
+                                type: array
+                                description: |
+                                  Number of participants by profession.
+                                items:
+                                  type: object
+                                  properties:
+                                    category:
+                                      type: string
+                                      enum:
+                                      - physician
+                                      - non-physician
+                                    numberOfParticipants:
+                                      type: integer
+                                      minimum: 0
+                                  required:
+                                  - category
+                                  - numberOfParticipants
+                          XtensibleInfo:
+                            type: object
+                            properties:
+                              CommendationTags:
+                                type: object
+                                properties:
+                                  CommendationTag:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: |
+                                      Example: 'Engages Teams', 'Improves Performance', etc. (See Appendix H)
+                              InKindSupports:
+                                type: object
+                                properties:
+                                  InKindSupport:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        source:
+                                          type: string
+                                          description: |
+                                            Name of the in-kind commercial supporter.
+                                      required:
+                                      - source
+                              DeliveryMethods:
+                                type: object
+                                properties:
+                                  DeliveryMethod:
+                                    type: array
+                                    items:
+                                      type: string
+                                    description: |
+                                      E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'.
+                              MeasuredOutcomes:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    MeasuredOutcome:
+                                      type: string
+                                      enum:
+                                      - Learner Competence
+                                      - Learner Performance
+                                      - Patient Health
+                                      - Community Health
+                                      - Learner Knowledge
+                                    MeasurementType:
+                                      type: array
+                                      items:
+                                        type: string
+                                        enum:
+                                        - Objective
+                                        - Subjective
+                                  required:
+                                  - MeasuredOutcome
+                              MOCRegistrations:
+                                type: object
+                                properties:
+                                  MOCRegistration:
+                                    type: array
+                                    description: |
+                                      One entry per certifying board for which MOC is offered.
+                                    items:
+                                      type: object
+                                      properties:
+                                        boardName:
+                                          type: string
+                                          enum:
+                                          - ABA
+                                          - ABIM
+                                          - ABOHNS
+                                          - ABOS
+                                          - ABP
+                                          - ABPATH
+                                          - ABS
+                                          - ABTS
+                                        mocPoints:
+                                          type: number
+                                          description: |
+                                            MOC/CC points (minimum increments of 0.25).
+                                        MOCCreditType:
+                                          type: array
+                                          items:
+                                            type: string
+                                          description: |
+                                            Board-specific MOC credit type, see Appendix G.
+                                        CreditClaimDate:
+                                          type: string
+                                          formate: date
+                                          description: |
+                                            Deadline date for learner MOC credit submissions (YYYY-MM-DD).
+                                      required:
+                                      - boardName
+                                      - mocPoints
+                                      - MOCCreditType
+                              ContentOutlines:
+                                type: object
+                                properties:
+                                  ContentOutlineSelections:
+                                    type: array
+                                    description: |
+                                      One entry for each content outline selection for the activity.
+                                    items:
+                                      type: object
+                                      properties:
+                                        ContentOutlineSource:
+                                          type: string
+                                          description: |
+                                            The publisher of the outline taxonomy (e.g. ABA).
+                                        ContentOutlineKeys:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              ContentKeyword:
+                                                type: string
+                                              ContentKeywordValue:
+                                                type: string
+                              ForPublicList:
+                                type: boolean
+                                description: |
+                                  If true, the activity is displayed on CME Passport.
+                              FeeForParticipation:
+                                type: string
+                                enum:
+                                - "Yes"
+                                - "No, it’s free"
+                                - Variable
+                              ActivityRegistration:
+                                type: string
+                                enum:
+                                - Open to all
+                                - Limited
+                              IsMeritBasedIncentivePaymentSystem:
+                                type: boolean
+                              REMS:
+                                type: object
+                                properties:
+                                  REMSType:
+                                    type: string
+                                    enum:
+                                    - Opioid Analgesic
+                                    - Mycophenolate
+                                  REMSRelatedIdentifier:
+                                    type: string
+                                    description: |
+                                      If relevant, e.g. 'EG-######-###'.
+                                required:
+                                - REMSType
+                                - REMSRelatedIdentifier
+                              activityRecordAction:
+                                type: string
+                                enum:
+                                - Add
+                                - Update
+                                - Delete
+                              closeActivityRecord:
+                                type: boolean
+                              HasStateContentTags:
+                                type: boolean
+                              StateContentTags:
+                                type: object
+                                properties:
+                                  StateContent:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        StateContentDomain:
+                                          type: string
+                                          description: |
+                                            Parent category for state content (e.g., 'Opioids').
+                                        StateContentTopic:
+                                          type: string
+                                          description: |
+                                            Topic name (see Appendix J).
+                                      required:
+                                      - StateContentDomain
+                                      - StateContentTopic
+                        required:
+                        - ReportDescription
+                        - ActivityDescription
+                        - Lom
+                        - healthcareMetadata
+                        - participationMetrics
+                        - XtensibleInfo
+                  required:
+                  - MedicalEducationMetrics
+              required:
+              - ACCMEActivities
+      responses:
+        "201":
+          description: Activity created successfully.
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                $id: https://example.org/accme-pars-activity.schema.json
+                title: ACCME PARS Activity JSON Schema
+                description: |
+                  JSON schema describing ACCME PARS Activity data, based on the Medbiquitous MEMS XML specification and ACCME extensions.
+                type: object
+                properties:
+                  ACCMEActivities:
+                    type: object
+                    description: Root element that corresponds to the <ACCMEActivities> element in XML.
+                    properties:
+                      MedicalEducationMetrics:
+                        type: array
+                        description: |
+                          Array of <MedicalEducationMetrics> objects, each representing one activity record.
+                        items:
+                          type: object
+                          description: Container for a single activity’s data.
+                          properties:
+                            ReportDescription:
+                              type: object
+                              properties:
+                                ReportingStartDate:
+                                  type: string
+                                  formate: date
+                                  description: |
+                                    Year portion should align with the activity start date (YYYY or YYYY-MM-DD).
+                                ReportingEndDate:
+                                  type: string
+                                  formate: date
+                                  description: |
+                                    Year portion should align with the activity end date (YYYY or YYYY-MM-DD).
+                              required:
+                              - ReportingStartDate
+                              - ReportingEndDate
+                            ActivityDescription:
+                              type: object
+                              properties:
+                                commercialSupportAmount:
+                                  type: array
+                                  description: "Information about sources of commercial support, if any."
+                                  items:
+                                    type: object
+                                    properties:
+                                      currency:
+                                        type: string
+                                        description: Typically 'USD'.
+                                      supportSource:
+                                        type: string
+                                        description: The name of the commercial supporter (see Appendix I).
+                                      value:
+                                        type: number
+                                        description: Whole number for the support amount.
+                                    required:
+                                    - currency
+                                    - supportSource
+                                    - value
+                            Lom:
+                              type: object
+                              description: Container for LOM general metadata.
+                              properties:
+                                general:
+                                  type: object
+                                  properties:
+                                    identifier:
+                                      type: array
+                                      description: |
+                                        Array of identifiers (Provider Activity ID, ACCME Activity ID, URL).
+                                      items:
+                                        type: object
+                                        properties:
+                                          catalog:
+                                            type: string
+                                            description: |
+                                              e.g., 'ACCME Activity ID', 'Provider Activity ID', or 'URL'.
+                                          entry:
+                                            type: string
+                                            description: Unique identifier value.
+                                        required:
+                                        - catalog
+                                        - entry
+                                    title:
+                                      type: string
+                                      description: Name of the learning activity.
+                                    description:
+                                      type: string
+                                      description: |
+                                        Free-text description of the activity content (max 2,500 characters).
+                                    keyword:
+                                      type: array
+                                      description: Used primarily for MOCA content outline (ABA).
+                                      items:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            description: "e.g. 'Level 3 ID', 'Tag ID', or 'Free Text'."
+                                          source:
+                                            type: string
+                                            description: |
+                                              Distinguishes 1st or 2nd MOCA content selection: '01_ABAMCO' or '02_ABAMCO'.
+                                          string:
+                                            type: string
+                                            description: |
+                                              Value for the keyword, e.g. MOCA Content Outline numeric code or free text.
+                                        required:
+                                        - id
+                                        - source
+                                        - string
+                                  required:
+                                  - identifier
+                                  - title
+                                  - description
+                            healthcareMetadata:
+                              type: object
+                              description: |
+                                Container for Healthcare LOM metadata. Typically houses the healthcareEducation sub-element.
+                              properties:
+                                healthcareEducation:
+                                  type: object
+                                  properties:
+                                    credits:
+                                      type: object
+                                      description: |
+                                        Container for specifying credits and other related fields.
+                                      properties:
+                                        activityCertification:
+                                          type: string
+                                          description: E.g. 'AMA PRA Category 1'
+                                        numberOfCredits:
+                                          type: number
+                                          description: Number of credits assigned to the activity.
+                                      required:
+                                      - activityCertification
+                                      - numberOfCredits
+                                    activityLocation:
+                                      type: object
+                                      properties:
+                                        city:
+                                          type: string
+                                        stateOrProvince:
+                                          type: string
+                                          description: |
+                                            Two-letter US state if country=USA (see Appendix D).
+                                        country:
+                                          type: string
+                                          description: |
+                                            Three-letter country code (see Appendix C).
+                                    startDateTime:
+                                      type: string
+                                      formate: date-time
+                                      description: |
+                                        Start date/time; time portion often ignored by ACCME (format'YYYY-MM-DDT00:00:00').
+                                    endDateTime:
+                                      type: string
+                                      formate: date-time
+                                      description: |
+                                        End date/time; time portion often ignored by ACCME.
+                                    activitySponsorship:
+                                      type: string
+                                      enum:
+                                      - direct
+                                      - joint
+                                    activityFormat:
+                                      type: string
+                                      description: |
+                                        One of the recognized ACCME activity types, e.g. 'Live Course', 'Enduring Material', etc.
+                                    commercialSupport:
+                                      type: boolean
+                                      description: |
+                                        True if there is commercial support; false if not.
+                                    targetAudience:
+                                      type: object
+                                      description: |
+                                        Used if registering for MOC. Contains the 'specialty' array.
+                                      properties:
+                                        specialty:
+                                          type: array
+                                          items:
+                                            type: string
+                                            description: |
+                                              Specialty or practice area (see Appendix F).
+                                  required:
+                                  - credits
+                                  - startDateTime
+                                  - endDateTime
+                                  - activitySponsorship
+                                  - activityFormat
+                              required:
+                              - healthcareEducation
+                            participationMetrics:
+                              type: object
+                              properties:
+                                participantsByCategory:
+                                  type: array
+                                  description: |
+                                    Number of participants by profession.
+                                  items:
+                                    type: object
+                                    properties:
+                                      category:
+                                        type: string
+                                        enum:
+                                        - physician
+                                        - non-physician
+                                      numberOfParticipants:
+                                        type: integer
+                                        minimum: 0
+                                    required:
+                                    - category
+                                    - numberOfParticipants
+                            XtensibleInfo:
+                              type: object
+                              properties:
+                                CommendationTags:
+                                  type: object
+                                  properties:
+                                    CommendationTag:
+                                      type: array
+                                      items:
+                                        type: string
+                                      description: |
+                                        Example: 'Engages Teams', 'Improves Performance', etc. (See Appendix H)
+                                InKindSupports:
+                                  type: object
+                                  properties:
+                                    InKindSupport:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          source:
+                                            type: string
+                                            description: |
+                                              Name of the in-kind commercial supporter.
+                                        required:
+                                        - source
+                                DeliveryMethods:
+                                  type: object
+                                  properties:
+                                    DeliveryMethod:
+                                      type: array
+                                      items:
+                                        type: string
+                                      description: |
+                                        E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'.
+                                MeasuredOutcomes:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      MeasuredOutcome:
+                                        type: string
+                                        enum:
+                                        - Learner Competence
+                                        - Learner Performance
+                                        - Patient Health
+                                        - Community Health
+                                        - Learner Knowledge
+                                      MeasurementType:
+                                        type: array
+                                        items:
+                                          type: string
+                                          enum:
+                                          - Objective
+                                          - Subjective
+                                    required:
+                                    - MeasuredOutcome
+                                MOCRegistrations:
+                                  type: object
+                                  properties:
+                                    MOCRegistration:
+                                      type: array
+                                      description: |
+                                        One entry per certifying board for which MOC is offered.
+                                      items:
+                                        type: object
+                                        properties:
+                                          boardName:
+                                            type: string
+                                            enum:
+                                            - ABA
+                                            - ABIM
+                                            - ABOHNS
+                                            - ABOS
+                                            - ABP
+                                            - ABPATH
+                                            - ABS
+                                            - ABTS
+                                          mocPoints:
+                                            type: number
+                                            description: |
+                                              MOC/CC points (minimum increments of 0.25).
+                                          MOCCreditType:
+                                            type: array
+                                            items:
+                                              type: string
+                                            description: |
+                                              Board-specific MOC credit type, see Appendix G.
+                                          CreditClaimDate:
+                                            type: string
+                                            formate: date
+                                            description: |
+                                              Deadline date for learner MOC credit submissions (YYYY-MM-DD).
+                                        required:
+                                        - boardName
+                                        - mocPoints
+                                        - MOCCreditType
+                                ContentOutlines:
+                                  type: object
+                                  properties:
+                                    ContentOutlineSelections:
+                                      type: array
+                                      description: |
+                                        One entry for each content outline selection for the activity.
+                                      items:
+                                        type: object
+                                        properties:
+                                          ContentOutlineSource:
+                                            type: string
+                                            description: |
+                                              The publisher of the outline taxonomy (e.g. ABA).
+                                          ContentOutlineKeys:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                ContentKeyword:
+                                                  type: string
+                                                ContentKeywordValue:
+                                                  type: string
+                                ForPublicList:
+                                  type: boolean
+                                  description: |
+                                    If true, the activity is displayed on CME Passport.
+                                FeeForParticipation:
+                                  type: string
+                                  enum:
+                                  - "Yes"
+                                  - "No, it’s free"
+                                  - Variable
+                                ActivityRegistration:
+                                  type: string
+                                  enum:
+                                  - Open to all
+                                  - Limited
+                                IsMeritBasedIncentivePaymentSystem:
+                                  type: boolean
+                                REMS:
+                                  type: object
+                                  properties:
+                                    REMSType:
+                                      type: string
+                                      enum:
+                                      - Opioid Analgesic
+                                      - Mycophenolate
+                                    REMSRelatedIdentifier:
+                                      type: string
+                                      description: |
+                                        If relevant, e.g. 'EG-######-###'.
+                                  required:
+                                  - REMSType
+                                  - REMSRelatedIdentifier
+                                activityRecordAction:
+                                  type: string
+                                  enum:
+                                  - Add
+                                  - Update
+                                  - Delete
+                                closeActivityRecord:
+                                  type: boolean
+                                HasStateContentTags:
+                                  type: boolean
+                                StateContentTags:
+                                  type: object
+                                  properties:
+                                    StateContent:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          StateContentDomain:
+                                            type: string
+                                            description: |
+                                              Parent category for state content (e.g., 'Opioids').
+                                          StateContentTopic:
+                                            type: string
+                                            description: |
+                                              Topic name (see Appendix J).
+                                        required:
+                                        - StateContentDomain
+                                        - StateContentTopic
+                          required:
+                          - ReportDescription
+                          - ActivityDescription
+                          - Lom
+                          - healthcareMetadata
+                          - participationMetrics
+                          - XtensibleInfo
+                    required:
+                    - MedicalEducationMetrics
+                required:
+                - ACCMEActivities
+        "400":
+          description: Invalid input.
+    get:
+      summary: Get ACCME PARS Activities with Optional Filtering
+      description: |
+        Retrieve a list of activities. Optionally filter the results by: - **providerActivityId** Provider Activity ID. - **activityStartDate** Activity start date (formatYYYY-MM-DD). - **activityTypeName** Activity type name (e.g. "Live Course", "Enduring Material"). Any combination of these query parameters can be used.
+      operationId: getAccmeActivities
+      parameters:
+      - name: providerActivityId
+        in: query
+        description: Provider Activity ID to filter activities.
+        required: false
+        schema:
+          type: string
+      - name: activityStartDate
+        in: query
+        description: Activity start date (format YYYY-MM-DD) to filter activities.
+        required: false
+        schema:
+          type: string
+          formate: date
+      - name: activityTypeName
+        in: query
+        description: Activity type name (e.g. "Live Course") to filter activities.
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: A list of activities matching the filter criteria.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $schema: https://json-schema.org/draft/2020-12/schema
+                  $id: https://example.org/accme-pars-activity.schema.json
+                  title: ACCME PARS Activity JSON Schema
+                  description: |
+                    JSON schema describing ACCME PARS Activity data, based on the Medbiquitous MEMS XML specification and ACCME extensions.
+                  type: object
+                  properties:
+                    ACCMEActivities:
+                      type: object
+                      description: Root element that corresponds to the <ACCMEActivities> element in XML.
+                      properties:
+                        MedicalEducationMetrics:
+                          type: array
+                          description: |
+                            Array of <MedicalEducationMetrics> objects, each representing one activity record.
+                          items:
+                            type: object
+                            description: Container for a single activity’s data.
+                            properties:
+                              ReportDescription:
+                                type: object
+                                properties:
+                                  ReportingStartDate:
+                                    type: string
+                                    formate: date
+                                    description: |
+                                      Year portion should align with the activity start date (YYYY or YYYY-MM-DD).
+                                  ReportingEndDate:
+                                    type: string
+                                    formate: date
+                                    description: |
+                                      Year portion should align with the activity end date (YYYY or YYYY-MM-DD).
+                                required:
+                                - ReportingStartDate
+                                - ReportingEndDate
+                              ActivityDescription:
+                                type: object
+                                properties:
+                                  commercialSupportAmount:
+                                    type: array
+                                    description: "Information about sources of commercial support, if any."
+                                    items:
+                                      type: object
+                                      properties:
+                                        currency:
+                                          type: string
+                                          description: Typically 'USD'.
+                                        supportSource:
+                                          type: string
+                                          description: The name of the commercial supporter (see Appendix I).
+                                        value:
+                                          type: number
+                                          description: Whole number for the support amount.
+                                      required:
+                                      - currency
+                                      - supportSource
+                                      - value
+                              Lom:
+                                type: object
+                                description: Container for LOM general metadata.
+                                properties:
+                                  general:
+                                    type: object
+                                    properties:
+                                      identifier:
+                                        type: array
+                                        description: |
+                                          Array of identifiers (Provider Activity ID, ACCME Activity ID, URL).
+                                        items:
+                                          type: object
+                                          properties:
+                                            catalog:
+                                              type: string
+                                              description: |
+                                                e.g., 'ACCME Activity ID', 'Provider Activity ID', or 'URL'.
+                                            entry:
+                                              type: string
+                                              description: Unique identifier value.
+                                          required:
+                                          - catalog
+                                          - entry
+                                      title:
+                                        type: string
+                                        description: Name of the learning activity.
+                                      description:
+                                        type: string
+                                        description: |
+                                          Free-text description of the activity content (max 2,500 characters).
+                                      keyword:
+                                        type: array
+                                        description: Used primarily for MOCA content outline (ABA).
+                                        items:
+                                          type: object
+                                          properties:
+                                            id:
+                                              type: string
+                                              description: "e.g. 'Level 3 ID', 'Tag ID', or 'Free Text'."
+                                            source:
+                                              type: string
+                                              description: |
+                                                Distinguishes 1st or 2nd MOCA content selection: '01_ABAMCO' or '02_ABAMCO'.
+                                            string:
+                                              type: string
+                                              description: |
+                                                Value for the keyword, e.g. MOCA Content Outline numeric code or free text.
+                                          required:
+                                          - id
+                                          - source
+                                          - string
+                                    required:
+                                    - identifier
+                                    - title
+                                    - description
+                              healthcareMetadata:
+                                type: object
+                                description: |
+                                  Container for Healthcare LOM metadata. Typically houses the healthcareEducation sub-element.
+                                properties:
+                                  healthcareEducation:
+                                    type: object
+                                    properties:
+                                      credits:
+                                        type: object
+                                        description: |
+                                          Container for specifying credits and other related fields.
+                                        properties:
+                                          activityCertification:
+                                            type: string
+                                            description: E.g. 'AMA PRA Category 1'
+                                          numberOfCredits:
+                                            type: number
+                                            description: Number of credits assigned to the activity.
+                                        required:
+                                        - activityCertification
+                                        - numberOfCredits
+                                      activityLocation:
+                                        type: object
+                                        properties:
+                                          city:
+                                            type: string
+                                          stateOrProvince:
+                                            type: string
+                                            description: |
+                                              Two-letter US state if country=USA (see Appendix D).
+                                          country:
+                                            type: string
+                                            description: |
+                                              Three-letter country code (see Appendix C).
+                                      startDateTime:
+                                        type: string
+                                        formate: date-time
+                                        description: |
+                                          Start date/time; time portion often ignored by ACCME (format'YYYY-MM-DDT00:00:00').
+                                      endDateTime:
+                                        type: string
+                                        formate: date-time
+                                        description: |
+                                          End date/time; time portion often ignored by ACCME.
+                                      activitySponsorship:
+                                        type: string
+                                        enum:
+                                        - direct
+                                        - joint
+                                      activityFormat:
+                                        type: string
+                                        description: |
+                                          One of the recognized ACCME activity types, e.g. 'Live Course', 'Enduring Material', etc.
+                                      commercialSupport:
+                                        type: boolean
+                                        description: |
+                                          True if there is commercial support; false if not.
+                                      targetAudience:
+                                        type: object
+                                        description: |
+                                          Used if registering for MOC. Contains the 'specialty' array.
+                                        properties:
+                                          specialty:
+                                            type: array
+                                            items:
+                                              type: string
+                                              description: |
+                                                Specialty or practice area (see Appendix F).
+                                    required:
+                                    - credits
+                                    - startDateTime
+                                    - endDateTime
+                                    - activitySponsorship
+                                    - activityFormat
+                                required:
+                                - healthcareEducation
+                              participationMetrics:
+                                type: object
+                                properties:
+                                  participantsByCategory:
+                                    type: array
+                                    description: |
+                                      Number of participants by profession.
+                                    items:
+                                      type: object
+                                      properties:
+                                        category:
+                                          type: string
+                                          enum:
+                                          - physician
+                                          - non-physician
+                                        numberOfParticipants:
+                                          type: integer
+                                          minimum: 0
+                                      required:
+                                      - category
+                                      - numberOfParticipants
+                              XtensibleInfo:
+                                type: object
+                                properties:
+                                  CommendationTags:
+                                    type: object
+                                    properties:
+                                      CommendationTag:
+                                        type: array
+                                        items:
+                                          type: string
+                                        description: |
+                                          Example: 'Engages Teams', 'Improves Performance', etc. (See Appendix H)
+                                  InKindSupports:
+                                    type: object
+                                    properties:
+                                      InKindSupport:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            source:
+                                              type: string
+                                              description: |
+                                                Name of the in-kind commercial supporter.
+                                          required:
+                                          - source
+                                  DeliveryMethods:
+                                    type: object
+                                    properties:
+                                      DeliveryMethod:
+                                        type: array
+                                        items:
+                                          type: string
+                                        description: |
+                                          E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'.
+                                  MeasuredOutcomes:
+                                    type: array
+                                    items:
+                                      type: object
+                                      properties:
+                                        MeasuredOutcome:
+                                          type: string
+                                          enum:
+                                          - Learner Competence
+                                          - Learner Performance
+                                          - Patient Health
+                                          - Community Health
+                                          - Learner Knowledge
+                                        MeasurementType:
+                                          type: array
+                                          items:
+                                            type: string
+                                            enum:
+                                            - Objective
+                                            - Subjective
+                                      required:
+                                      - MeasuredOutcome
+                                  MOCRegistrations:
+                                    type: object
+                                    properties:
+                                      MOCRegistration:
+                                        type: array
+                                        description: |
+                                          One entry per certifying board for which MOC is offered.
+                                        items:
+                                          type: object
+                                          properties:
+                                            boardName:
+                                              type: string
+                                              enum:
+                                              - ABA
+                                              - ABIM
+                                              - ABOHNS
+                                              - ABOS
+                                              - ABP
+                                              - ABPATH
+                                              - ABS
+                                              - ABTS
+                                            mocPoints:
+                                              type: number
+                                              description: |
+                                                MOC/CC points (minimum increments of 0.25).
+                                            MOCCreditType:
+                                              type: array
+                                              items:
+                                                type: string
+                                              description: |
+                                                Board-specific MOC credit type, see Appendix G.
+                                            CreditClaimDate:
+                                              type: string
+                                              formate: date
+                                              description: |
+                                                Deadline date for learner MOC credit submissions (YYYY-MM-DD).
+                                          required:
+                                          - boardName
+                                          - mocPoints
+                                          - MOCCreditType
+                                  ContentOutlines:
+                                    type: object
+                                    properties:
+                                      ContentOutlineSelections:
+                                        type: array
+                                        description: |
+                                          One entry for each content outline selection for the activity.
+                                        items:
+                                          type: object
+                                          properties:
+                                            ContentOutlineSource:
+                                              type: string
+                                              description: |
+                                                The publisher of the outline taxonomy (e.g. ABA).
+                                            ContentOutlineKeys:
+                                              type: array
+                                              items:
+                                                type: object
+                                                properties:
+                                                  ContentKeyword:
+                                                    type: string
+                                                  ContentKeywordValue:
+                                                    type: string
+                                  ForPublicList:
+                                    type: boolean
+                                    description: |
+                                      If true, the activity is displayed on CME Passport.
+                                  FeeForParticipation:
+                                    type: string
+                                    enum:
+                                    - "Yes"
+                                    - "No, it’s free"
+                                    - Variable
+                                  ActivityRegistration:
+                                    type: string
+                                    enum:
+                                    - Open to all
+                                    - Limited
+                                  IsMeritBasedIncentivePaymentSystem:
+                                    type: boolean
+                                  REMS:
+                                    type: object
+                                    properties:
+                                      REMSType:
+                                        type: string
+                                        enum:
+                                        - Opioid Analgesic
+                                        - Mycophenolate
+                                      REMSRelatedIdentifier:
+                                        type: string
+                                        description: |
+                                          If relevant, e.g. 'EG-######-###'.
+                                    required:
+                                    - REMSType
+                                    - REMSRelatedIdentifier
+                                  activityRecordAction:
+                                    type: string
+                                    enum:
+                                    - Add
+                                    - Update
+                                    - Delete
+                                  closeActivityRecord:
+                                    type: boolean
+                                  HasStateContentTags:
+                                    type: boolean
+                                  StateContentTags:
+                                    type: object
+                                    properties:
+                                      StateContent:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            StateContentDomain:
+                                              type: string
+                                              description: |
+                                                Parent category for state content (e.g., 'Opioids').
+                                            StateContentTopic:
+                                              type: string
+                                              description: |
+                                                Topic name (see Appendix J).
+                                          required:
+                                          - StateContentDomain
+                                          - StateContentTopic
+                            required:
+                            - ReportDescription
+                            - ActivityDescription
+                            - Lom
+                            - healthcareMetadata
+                            - participationMetrics
+                            - XtensibleInfo
+                      required:
+                      - MedicalEducationMetrics
+                  required:
+                  - ACCMEActivities
+        "404":
+          description: No matching activities found.
+  /activities/{activityId}:
+    get:
+      summary: Get an ACCME PARS Activity by ID
+      operationId: getAccmeActivityById
+      parameters:
+      - name: activityId
+        in: path
+        description: Unique identifier for the activity.
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Activity retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                $id: https://example.org/accme-pars-activity.schema.json
+                title: ACCME PARS Activity JSON Schema
+                description: |
+                  JSON schema describing ACCME PARS Activity data, based on the Medbiquitous MEMS XML specification and ACCME extensions.
+                type: object
+                properties:
+                  ACCMEActivities:
+                    type: object
+                    description: Root element that corresponds to the <ACCMEActivities> element in XML.
+                    properties:
+                      MedicalEducationMetrics:
+                        type: array
+                        description: |
+                          Array of <MedicalEducationMetrics> objects, each representing one activity record.
+                        items:
+                          type: object
+                          description: Container for a single activity’s data.
+                          properties:
+                            ReportDescription:
+                              type: object
+                              properties:
+                                ReportingStartDate:
+                                  type: string
+                                  formate: date
+                                  description: |
+                                    Year portion should align with the activity start date (YYYY or YYYY-MM-DD).
+                                ReportingEndDate:
+                                  type: string
+                                  formate: date
+                                  description: |
+                                    Year portion should align with the activity end date (YYYY or YYYY-MM-DD).
+                              required:
+                              - ReportingStartDate
+                              - ReportingEndDate
+                            ActivityDescription:
+                              type: object
+                              properties:
+                                commercialSupportAmount:
+                                  type: array
+                                  description: "Information about sources of commercial support, if any."
+                                  items:
+                                    type: object
+                                    properties:
+                                      currency:
+                                        type: string
+                                        description: Typically 'USD'.
+                                      supportSource:
+                                        type: string
+                                        description: The name of the commercial supporter (see Appendix I).
+                                      value:
+                                        type: number
+                                        description: Whole number for the support amount.
+                                    required:
+                                    - currency
+                                    - supportSource
+                                    - value
+                            Lom:
+                              type: object
+                              description: Container for LOM general metadata.
+                              properties:
+                                general:
+                                  type: object
+                                  properties:
+                                    identifier:
+                                      type: array
+                                      description: |
+                                        Array of identifiers (Provider Activity ID, ACCME Activity ID, URL).
+                                      items:
+                                        type: object
+                                        properties:
+                                          catalog:
+                                            type: string
+                                            description: |
+                                              e.g., 'ACCME Activity ID', 'Provider Activity ID', or 'URL'.
+                                          entry:
+                                            type: string
+                                            description: Unique identifier value.
+                                        required:
+                                        - catalog
+                                        - entry
+                                    title:
+                                      type: string
+                                      description: Name of the learning activity.
+                                    description:
+                                      type: string
+                                      description: |
+                                        Free-text description of the activity content (max 2,500 characters).
+                                    keyword:
+                                      type: array
+                                      description: Used primarily for MOCA content outline (ABA).
+                                      items:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            description: "e.g. 'Level 3 ID', 'Tag ID', or 'Free Text'."
+                                          source:
+                                            type: string
+                                            description: |
+                                              Distinguishes 1st or 2nd MOCA content selection: '01_ABAMCO' or '02_ABAMCO'.
+                                          string:
+                                            type: string
+                                            description: |
+                                              Value for the keyword, e.g. MOCA Content Outline numeric code or free text.
+                                        required:
+                                        - id
+                                        - source
+                                        - string
+                                  required:
+                                  - identifier
+                                  - title
+                                  - description
+                            healthcareMetadata:
+                              type: object
+                              description: |
+                                Container for Healthcare LOM metadata. Typically houses the healthcareEducation sub-element.
+                              properties:
+                                healthcareEducation:
+                                  type: object
+                                  properties:
+                                    credits:
+                                      type: object
+                                      description: |
+                                        Container for specifying credits and other related fields.
+                                      properties:
+                                        activityCertification:
+                                          type: string
+                                          description: E.g. 'AMA PRA Category 1'
+                                        numberOfCredits:
+                                          type: number
+                                          description: Number of credits assigned to the activity.
+                                      required:
+                                      - activityCertification
+                                      - numberOfCredits
+                                    activityLocation:
+                                      type: object
+                                      properties:
+                                        city:
+                                          type: string
+                                        stateOrProvince:
+                                          type: string
+                                          description: |
+                                            Two-letter US state if country=USA (see Appendix D).
+                                        country:
+                                          type: string
+                                          description: |
+                                            Three-letter country code (see Appendix C).
+                                    startDateTime:
+                                      type: string
+                                      formate: date-time
+                                      description: |
+                                        Start date/time; time portion often ignored by ACCME (format'YYYY-MM-DDT00:00:00').
+                                    endDateTime:
+                                      type: string
+                                      formate: date-time
+                                      description: |
+                                        End date/time; time portion often ignored by ACCME.
+                                    activitySponsorship:
+                                      type: string
+                                      enum:
+                                      - direct
+                                      - joint
+                                    activityFormat:
+                                      type: string
+                                      description: |
+                                        One of the recognized ACCME activity types, e.g. 'Live Course', 'Enduring Material', etc.
+                                    commercialSupport:
+                                      type: boolean
+                                      description: |
+                                        True if there is commercial support; false if not.
+                                    targetAudience:
+                                      type: object
+                                      description: |
+                                        Used if registering for MOC. Contains the 'specialty' array.
+                                      properties:
+                                        specialty:
+                                          type: array
+                                          items:
+                                            type: string
+                                            description: |
+                                              Specialty or practice area (see Appendix F).
+                                  required:
+                                  - credits
+                                  - startDateTime
+                                  - endDateTime
+                                  - activitySponsorship
+                                  - activityFormat
+                              required:
+                              - healthcareEducation
+                            participationMetrics:
+                              type: object
+                              properties:
+                                participantsByCategory:
+                                  type: array
+                                  description: |
+                                    Number of participants by profession.
+                                  items:
+                                    type: object
+                                    properties:
+                                      category:
+                                        type: string
+                                        enum:
+                                        - physician
+                                        - non-physician
+                                      numberOfParticipants:
+                                        type: integer
+                                        minimum: 0
+                                    required:
+                                    - category
+                                    - numberOfParticipants
+                            XtensibleInfo:
+                              type: object
+                              properties:
+                                CommendationTags:
+                                  type: object
+                                  properties:
+                                    CommendationTag:
+                                      type: array
+                                      items:
+                                        type: string
+                                      description: |
+                                        Example: 'Engages Teams', 'Improves Performance', etc. (See Appendix H)
+                                InKindSupports:
+                                  type: object
+                                  properties:
+                                    InKindSupport:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          source:
+                                            type: string
+                                            description: |
+                                              Name of the in-kind commercial supporter.
+                                        required:
+                                        - source
+                                DeliveryMethods:
+                                  type: object
+                                  properties:
+                                    DeliveryMethod:
+                                      type: array
+                                      items:
+                                        type: string
+                                      description: |
+                                        E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'.
+                                MeasuredOutcomes:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      MeasuredOutcome:
+                                        type: string
+                                        enum:
+                                        - Learner Competence
+                                        - Learner Performance
+                                        - Patient Health
+                                        - Community Health
+                                        - Learner Knowledge
+                                      MeasurementType:
+                                        type: array
+                                        items:
+                                          type: string
+                                          enum:
+                                          - Objective
+                                          - Subjective
+                                    required:
+                                    - MeasuredOutcome
+                                MOCRegistrations:
+                                  type: object
+                                  properties:
+                                    MOCRegistration:
+                                      type: array
+                                      description: |
+                                        One entry per certifying board for which MOC is offered.
+                                      items:
+                                        type: object
+                                        properties:
+                                          boardName:
+                                            type: string
+                                            enum:
+                                            - ABA
+                                            - ABIM
+                                            - ABOHNS
+                                            - ABOS
+                                            - ABP
+                                            - ABPATH
+                                            - ABS
+                                            - ABTS
+                                          mocPoints:
+                                            type: number
+                                            description: |
+                                              MOC/CC points (minimum increments of 0.25).
+                                          MOCCreditType:
+                                            type: array
+                                            items:
+                                              type: string
+                                            description: |
+                                              Board-specific MOC credit type, see Appendix G.
+                                          CreditClaimDate:
+                                            type: string
+                                            formate: date
+                                            description: |
+                                              Deadline date for learner MOC credit submissions (YYYY-MM-DD).
+                                        required:
+                                        - boardName
+                                        - mocPoints
+                                        - MOCCreditType
+                                ContentOutlines:
+                                  type: object
+                                  properties:
+                                    ContentOutlineSelections:
+                                      type: array
+                                      description: |
+                                        One entry for each content outline selection for the activity.
+                                      items:
+                                        type: object
+                                        properties:
+                                          ContentOutlineSource:
+                                            type: string
+                                            description: |
+                                              The publisher of the outline taxonomy (e.g. ABA).
+                                          ContentOutlineKeys:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                ContentKeyword:
+                                                  type: string
+                                                ContentKeywordValue:
+                                                  type: string
+                                ForPublicList:
+                                  type: boolean
+                                  description: |
+                                    If true, the activity is displayed on CME Passport.
+                                FeeForParticipation:
+                                  type: string
+                                  enum:
+                                  - "Yes"
+                                  - "No, it’s free"
+                                  - Variable
+                                ActivityRegistration:
+                                  type: string
+                                  enum:
+                                  - Open to all
+                                  - Limited
+                                IsMeritBasedIncentivePaymentSystem:
+                                  type: boolean
+                                REMS:
+                                  type: object
+                                  properties:
+                                    REMSType:
+                                      type: string
+                                      enum:
+                                      - Opioid Analgesic
+                                      - Mycophenolate
+                                    REMSRelatedIdentifier:
+                                      type: string
+                                      description: |
+                                        If relevant, e.g. 'EG-######-###'.
+                                  required:
+                                  - REMSType
+                                  - REMSRelatedIdentifier
+                                activityRecordAction:
+                                  type: string
+                                  enum:
+                                  - Add
+                                  - Update
+                                  - Delete
+                                closeActivityRecord:
+                                  type: boolean
+                                HasStateContentTags:
+                                  type: boolean
+                                StateContentTags:
+                                  type: object
+                                  properties:
+                                    StateContent:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          StateContentDomain:
+                                            type: string
+                                            description: |
+                                              Parent category for state content (e.g., 'Opioids').
+                                          StateContentTopic:
+                                            type: string
+                                            description: |
+                                              Topic name (see Appendix J).
+                                        required:
+                                        - StateContentDomain
+                                        - StateContentTopic
+                          required:
+                          - ReportDescription
+                          - ActivityDescription
+                          - Lom
+                          - healthcareMetadata
+                          - participationMetrics
+                          - XtensibleInfo
+                    required:
+                    - MedicalEducationMetrics
+                required:
+                - ACCMEActivities
+        "404":
+          description: Activity not found.
+components:
+  schemas:
+    AccmePARSActivity:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: https://example.org/accme-pars-activity.schema.json
+      title: ACCME PARS Activity JSON Schema
+      description: |
+        JSON schema describing ACCME PARS Activity data, based on the Medbiquitous MEMS XML specification and ACCME extensions.
+      type: object
+      properties:
+        ACCMEActivities:
+          type: object
+          description: Root element that corresponds to the <ACCMEActivities> element in XML.
+          properties:
+            MedicalEducationMetrics:
+              type: array
+              description: |
+                Array of <MedicalEducationMetrics> objects, each representing one activity record.
+              items:
+                type: object
+                description: Container for a single activity’s data.
+                properties:
+                  ReportDescription:
+                    type: object
+                    properties:
+                      ReportingStartDate:
+                        type: string
+                        formate: date
+                        description: |
+                          Year portion should align with the activity start date (YYYY or YYYY-MM-DD).
+                      ReportingEndDate:
+                        type: string
+                        formate: date
+                        description: |
+                          Year portion should align with the activity end date (YYYY or YYYY-MM-DD).
+                    required:
+                    - ReportingStartDate
+                    - ReportingEndDate
+                  ActivityDescription:
+                    type: object
+                    properties:
+                      commercialSupportAmount:
+                        type: array
+                        description: "Information about sources of commercial support, if any."
+                        items:
+                          type: object
+                          properties:
+                            currency:
+                              type: string
+                              description: Typically 'USD'.
+                            supportSource:
+                              type: string
+                              description: The name of the commercial supporter (see Appendix I).
+                            value:
+                              type: number
+                              description: Whole number for the support amount.
+                          required:
+                          - currency
+                          - supportSource
+                          - value
+                  Lom:
+                    type: object
+                    description: Container for LOM general metadata.
+                    properties:
+                      general:
+                        type: object
+                        properties:
+                          identifier:
+                            type: array
+                            description: |
+                              Array of identifiers (Provider Activity ID, ACCME Activity ID, URL).
+                            items:
+                              type: object
+                              properties:
+                                catalog:
+                                  type: string
+                                  description: |
+                                    e.g., 'ACCME Activity ID', 'Provider Activity ID', or 'URL'.
+                                entry:
+                                  type: string
+                                  description: Unique identifier value.
+                              required:
+                              - catalog
+                              - entry
+                          title:
+                            type: string
+                            description: Name of the learning activity.
+                          description:
+                            type: string
+                            description: |
+                              Free-text description of the activity content (max 2,500 characters).
+                          keyword:
+                            type: array
+                            description: Used primarily for MOCA content outline (ABA).
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  description: "e.g. 'Level 3 ID', 'Tag ID', or 'Free Text'."
+                                source:
+                                  type: string
+                                  description: |
+                                    Distinguishes 1st or 2nd MOCA content selection: '01_ABAMCO' or '02_ABAMCO'.
+                                string:
+                                  type: string
+                                  description: |
+                                    Value for the keyword, e.g. MOCA Content Outline numeric code or free text.
+                              required:
+                              - id
+                              - source
+                              - string
+                        required:
+                        - identifier
+                        - title
+                        - description
+                  healthcareMetadata:
+                    type: object
+                    description: |
+                      Container for Healthcare LOM metadata. Typically houses the healthcareEducation sub-element.
+                    properties:
+                      healthcareEducation:
+                        type: object
+                        properties:
+                          credits:
+                            type: object
+                            description: |
+                              Container for specifying credits and other related fields.
+                            properties:
+                              activityCertification:
+                                type: string
+                                description: E.g. 'AMA PRA Category 1'
+                              numberOfCredits:
+                                type: number
+                                description: Number of credits assigned to the activity.
+                            required:
+                            - activityCertification
+                            - numberOfCredits
+                          activityLocation:
+                            type: object
+                            properties:
+                              city:
+                                type: string
+                              stateOrProvince:
+                                type: string
+                                description: |
+                                  Two-letter US state if country=USA (see Appendix D).
+                              country:
+                                type: string
+                                description: |
+                                  Three-letter country code (see Appendix C).
+                          startDateTime:
+                            type: string
+                            formate: date-time
+                            description: |
+                              Start date/time; time portion often ignored by ACCME (format'YYYY-MM-DDT00:00:00').
+                          endDateTime:
+                            type: string
+                            formate: date-time
+                            description: |
+                              End date/time; time portion often ignored by ACCME.
+                          activitySponsorship:
+                            type: string
+                            enum:
+                            - direct
+                            - joint
+                          activityFormat:
+                            type: string
+                            description: |
+                              One of the recognized ACCME activity types, e.g. 'Live Course', 'Enduring Material', etc.
+                          commercialSupport:
+                            type: boolean
+                            description: |
+                              True if there is commercial support; false if not.
+                          targetAudience:
+                            type: object
+                            description: |
+                              Used if registering for MOC. Contains the 'specialty' array.
+                            properties:
+                              specialty:
+                                type: array
+                                items:
+                                  type: string
+                                  description: |
+                                    Specialty or practice area (see Appendix F).
+                        required:
+                        - credits
+                        - startDateTime
+                        - endDateTime
+                        - activitySponsorship
+                        - activityFormat
+                    required:
+                    - healthcareEducation
+                  participationMetrics:
+                    type: object
+                    properties:
+                      participantsByCategory:
+                        type: array
+                        description: |
+                          Number of participants by profession.
+                        items:
+                          type: object
+                          properties:
+                            category:
+                              type: string
+                              enum:
+                              - physician
+                              - non-physician
+                            numberOfParticipants:
+                              type: integer
+                              minimum: 0
+                          required:
+                          - category
+                          - numberOfParticipants
+                  XtensibleInfo:
+                    type: object
+                    properties:
+                      CommendationTags:
+                        type: object
+                        properties:
+                          CommendationTag:
+                            type: array
+                            items:
+                              type: string
+                            description: |
+                              Example: 'Engages Teams', 'Improves Performance', etc. (See Appendix H)
+                      InKindSupports:
+                        type: object
+                        properties:
+                          InKindSupport:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                source:
+                                  type: string
+                                  description: |
+                                    Name of the in-kind commercial supporter.
+                              required:
+                              - source
+                      DeliveryMethods:
+                        type: object
+                        properties:
+                          DeliveryMethod:
+                            type: array
+                            items:
+                              type: string
+                            description: |
+                              E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'.
+                      MeasuredOutcomes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            MeasuredOutcome:
+                              type: string
+                              enum:
+                              - Learner Competence
+                              - Learner Performance
+                              - Patient Health
+                              - Community Health
+                              - Learner Knowledge
+                            MeasurementType:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                - Objective
+                                - Subjective
+                          required:
+                          - MeasuredOutcome
+                      MOCRegistrations:
+                        type: object
+                        properties:
+                          MOCRegistration:
+                            type: array
+                            description: |
+                              One entry per certifying board for which MOC is offered.
+                            items:
+                              type: object
+                              properties:
+                                boardName:
+                                  type: string
+                                  enum:
+                                  - ABA
+                                  - ABIM
+                                  - ABOHNS
+                                  - ABOS
+                                  - ABP
+                                  - ABPATH
+                                  - ABS
+                                  - ABTS
+                                mocPoints:
+                                  type: number
+                                  description: |
+                                    MOC/CC points (minimum increments of 0.25).
+                                MOCCreditType:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: |
+                                    Board-specific MOC credit type, see Appendix G.
+                                CreditClaimDate:
+                                  type: string
+                                  formate: date
+                                  description: |
+                                    Deadline date for learner MOC credit submissions (YYYY-MM-DD).
+                              required:
+                              - boardName
+                              - mocPoints
+                              - MOCCreditType
+                      ContentOutlines:
+                        type: object
+                        properties:
+                          ContentOutlineSelections:
+                            type: array
+                            description: |
+                              One entry for each content outline selection for the activity.
+                            items:
+                              type: object
+                              properties:
+                                ContentOutlineSource:
+                                  type: string
+                                  description: |
+                                    The publisher of the outline taxonomy (e.g. ABA).
+                                ContentOutlineKeys:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      ContentKeyword:
+                                        type: string
+                                      ContentKeywordValue:
+                                        type: string
+                      ForPublicList:
+                        type: boolean
+                        description: |
+                          If true, the activity is displayed on CME Passport.
+                      FeeForParticipation:
+                        type: string
+                        enum:
+                        - "Yes"
+                        - "No, it’s free"
+                        - Variable
+                      ActivityRegistration:
+                        type: string
+                        enum:
+                        - Open to all
+                        - Limited
+                      IsMeritBasedIncentivePaymentSystem:
+                        type: boolean
+                      REMS:
+                        type: object
+                        properties:
+                          REMSType:
+                            type: string
+                            enum:
+                            - Opioid Analgesic
+                            - Mycophenolate
+                          REMSRelatedIdentifier:
+                            type: string
+                            description: |
+                              If relevant, e.g. 'EG-######-###'.
+                        required:
+                        - REMSType
+                        - REMSRelatedIdentifier
+                      activityRecordAction:
+                        type: string
+                        enum:
+                        - Add
+                        - Update
+                        - Delete
+                      closeActivityRecord:
+                        type: boolean
+                      HasStateContentTags:
+                        type: boolean
+                      StateContentTags:
+                        type: object
+                        properties:
+                          StateContent:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                StateContentDomain:
+                                  type: string
+                                  description: |
+                                    Parent category for state content (e.g., 'Opioids').
+                                StateContentTopic:
+                                  type: string
+                                  description: |
+                                    Topic name (see Appendix J).
+                              required:
+                              - StateContentDomain
+                              - StateContentTopic
+                required:
+                - ReportDescription
+                - ActivityDescription
+                - Lom
+                - healthcareMetadata
+                - participationMetrics
+                - XtensibleInfo
+          required:
+          - MedicalEducationMetrics
+      required:
+      - ACCMEActivities
