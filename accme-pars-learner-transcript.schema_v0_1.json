@@ -37,20 +37,44 @@
 								"type": "object",
 								"description": "Optional personal information.",
 								"properties": {
-									"StateOfLicensure": {
-										"type": "string",
-										"description": "State where the learner is licensed (e.g., 'CA', 'NY').",
-										"pattern": "^[A-Z]{2}$"
-									},
-									"StateMedicalLicenseID": {
-										"type": "string",
-										"description": "Learner's state medical license ID."
-									},
-									"NPI": {
-										"type": "string",
-										"description": "Learner's National Provider Identifier.",
-										"pattern": "^[0-9]{10}$"
-									}
+									"Licensure": {
+										"type": "array",
+										"description": "An array of state licenses held by this learner.",
+										"items": {
+											"StateOfLicensure": {
+										        "type": "string",
+										        "description": "State where the learner is licensed (e.g., 'CA', 'NY').",
+										        "pattern": "^[A-Z]{2}$"
+									        },
+											"StateLicensingBoard": {
+										    	"type": "string",
+										    	"description": "Name of the state licensing authority."
+											},
+									        "StateMedicalLicenseID": {
+									        	"type": "string",
+								        		"description": "Learner's state medical license ID."
+									        }
+										},
+										"Certification": {
+									        "type": "array",
+									        "description": "An array of specialty certifications held by this learner.",
+									        "items": {
+ 									      	    "CertifyingBoard": {
+									        	     "type": "string",
+									        	     "description": "Name of the specialty board issuing the learner certification (e.g., 'American Board of Internal Medicine')."
+											     },
+											     "CertifyingBoardID": {
+												     "type": "string",
+												     "description": "Learner's certifying board ID."
+											     }
+											 }
+										 },
+										 "NPI": {
+											 "type": "string",
+											 "description": "Learner's National Provider Identifier.",
+											 "pattern": "^[0-9]{10}$"
+										 }
+									 }
 								},
 								"additionalProperties": false
 							}
@@ -71,8 +95,7 @@
 									"properties": {
 										"ProviderOrganization": {
 											"type": "string",
-											"description": "ACCME-issued 7-digit provider ID (leading zeroes allowed).",
-											"pattern": "^[0-9]{7}$"
+											"description": "ACCME-issued 7-digit provider ID (leading zeroes allowed)."
 										},
 										"ReportingOrganization": {
 											"type": "string",
@@ -158,57 +181,6 @@
 															"CreditReceived"
 														]
 													}
-												},
-												"DeliveryMethods": {
-													"type": "object",
-													"properties": {
-														"DeliveryMethod": {
-															"type": "array",
-															"items": {
-																"type": "string",
-																"description": "E.g. 'In-Person', 'Live-Streamed', 'Online', 'Print/Other'."
-															}
-														}
-													}
-												},
-												"MOCRegistrations": {
-													"type": "object",
-													"properties": {
-														"MOCRegistration": {
-															"type": "array",
-															"description": "One entry per certifying board for which MOC is offered.",
-															"items": {
-																"type": "object",
-																"properties": {
-																	"boardName": {
-																		"type": "string",
-																		"enum": ["ABA","ABIM","ABOHNS","ABOS","ABP","ABPATH","ABS","ABTS"]
-																	},
-																	"mocPoints": {
-																		"type": "number",
-																		"description": "MOC/CC points (minimum increments of 0.25)."
-																	},
-																	"MOCCreditType": {
-																		"type": "array",
-																		"items": {
-																			"type": "string",
-																			"description": "Board-specific MOC credit type, see Appendix G."
-																		}
-																	},
-																	"CreditClaimDate": {
-																		"type": "string",
-																		"format": "date",
-																		"description": "Deadline date for learner MOC credit submissions (YYYY-MM-DD)."
-																	}
-																},
-																"required": [
-																	"boardName",
-																	"mocPoints",
-																	"MOCCreditType"
-																]
-															}
-														}
-													}
 												}
 											},
 											"required": [
@@ -234,10 +206,6 @@
 						"type": "object",
 						"description": "Container for custom elements added by ACCME.",
 						"properties": {
-							"ProviderID": {
-								"type": "string",
-								"description": "Web services provider identifier"
-							},
 							"Notes": {
 								"type": "string",
 								"description": "Optional notes or annotations."
