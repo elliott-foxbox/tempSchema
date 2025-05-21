@@ -146,21 +146,31 @@
 										"properties": {
 											"credits": {
 												"type": "object",
-												"description": "Container for specifying credits and other related fields.",
 												"properties": {
 													"activityCertification": {
 														"type": "string",
-														"description": "E.g. 'AMA PRA Category 1'"
+														"enum": [
+															"IPCE",
+															"AMA PRA Category 1",
+															"Nursing",
+															"Pharmacy",
+															"AAPA Category 1",
+															"Psychologist",
+															"Optometrist",
+															"Social Worker",
+															"Dentist",
+															"Dietetic CPEU",
+															"Athletic Training CEU"
+														],
+														"description": "Category of accreditation credit awarded."
 													},
 													"numberOfCredits": {
 														"type": "number",
-														"description": "Number of credits assigned to the activity."
+														"minimum": 0.25,
+														"description": "Accreditation credits awarded, increments of 0.25 or greater."
 													}
 												},
-												"required": [
-													"activityCertification",
-													"numberOfCredits"
-												]
+												"required": ["activityCertification", "numberOfCredits"]
 											},
 											"activityLocation": {
 												"type": "object",
@@ -204,17 +214,39 @@
 												"description": "True if there is commercial support; false if not."
 											},
 											"targetAudience": {
-												"type": "object",
-												"description": "Used if registering for MOC. Contains 'specialty' array.",
-												"properties": {
-													"specialty": {
-														"type": "array",
-														"items": {
-															"type": "string",
-															"description": "Specialty or practice area (see Appendix F)."
-														}
-													}
-												}
+											    "type": "object",
+											    "description": "Detailed audience specification for joint accredited activities.",
+											    "properties": {
+											        "profession": {
+											            "type": "array",
+											            "description": "Profession-specific target audiences.",
+											            "items": {
+											                "type": "string",
+											                "enum": ["Physician",
+																"Nurse",
+																"Pharmacist",
+																"Pharmacy Technician",
+																"Physician Assistant",
+																"Psychologist",
+																"Optometrist",
+																"Social Worker",
+																"Dentist",
+																"Allied Dental Staff",
+																"Registered Dietitian",
+																"Dietetic Technician Registered",
+																"Athletic Trainer"
+															]
+											            }
+											        },
+											        "specialty": {
+											            "type": "array",
+											            "items": {
+											                "type": "string",
+											                "description": "Specialty or practice area relevant for the activity."
+											            }
+											        }
+											    },
+											    "required": ["profession"]
 											}
 										},
 										"required": [
@@ -236,26 +268,39 @@
 									"participantsByCategory": {
 										"type": "array",
 										"description": "Number of participants by profession.",
-										"items": {
-											"type": "object",
-											"properties": {
-												"category": {
-													"type": "string", 
-						                            "enum": ["physician", "non-physician"]
-						                          }
-												},
-												"numberOfParticipants": {
-													"type": "integer",
-													"minimum": 0
-												}
+                                        "items": {
+										    "type": "object",
+				                            "properties": {
+            									"category": {
+													"type": "string",
+			                            			"enum": ["physician",
+			                            			"nurse",
+													"pharmacist",
+													"pharmacy technician",
+													"physician",
+													"physician assistant",
+													"psychologist",
+													"optometrist",
+													"social worker",
+													"dentist",
+													"allied dental staff",
+													"registered dietitians",
+													"dietetic technicians registered",
+													"athletic trainers",
+													"other"]
+			                          		  	}
 											},
-											"required": [
-												"category",
-												"numberOfParticipants"
+											"numberOfParticipants": {
+												"type": "integer",
+												"minimum": 0
+											}
+										},
+										"required": [
+											"category",
+											"numberOfParticipants"
 											]
 										}
 									}
-								}
 							},
 							"XtensibleInfo": {
 								"type": "object",
@@ -263,7 +308,11 @@
 									"ProviderID": {
 										"type": "string",
 										"description": "Web services provider identifier"
-									}
+									},
+									"isInterprofessional ": {
+										"type": "boolean",
+										"description": "True if activity is jointly accredited; false otherwise."
+									},
 									"CommendationTags": {
 										"type": "object",
 										"properties": {
@@ -315,13 +364,13 @@
 											"properties": {
 												"MeasuredOutcome": {
 													"type": "string",
-						                            "enum": [
-						                              "Learner Competence",
-						                              "Learner Performance",
-						                              "Patient Health",
-						                              "Community Health",
-						                              "Learner Knowledge"
-						                            ]
+													"enum": [
+														"Learner Competence",
+														"Learner Performance",
+														"Patient Health",
+														"Community Health",
+														"Learner Knowledge"
+													]
 												},
 												"MeasurementType": {
 													"type": "array",
@@ -399,6 +448,7 @@
 																	"ContentKeywordValue": {
 																		"type": "string"	
 																	}
+																}
 															}
 														}
 													}
@@ -431,12 +481,12 @@
 											"REMSRelatedIdentifier": {
 												"type": "string",
 												"description": "If relevant, e.g. 'EG-######-###'."
-											}
-										},
-										"required": [
-											"REMSType",
-											"REMSRelatedIdentifier"
-										]
+											},
+											"required": [
+												"REMSType",
+												"REMSRelatedIdentifier"
+											]
+										}
 									},
 									"activityRecordAction": {
 										"type": "string",
@@ -449,8 +499,124 @@
 									"closeActivityRecord": {
 										"type": "boolean"
 									},
+									"PharmacyActivityType": {
+										"type": "string",
+										"description": "Specific pharmacy activity type",
+										"enum": [
+											"Knowledge",
+											"Application",
+											"Certificate Program"
+										]
+									},
+									"PharmacyActivityTopic": {
+										"type": "string",
+										"description": "Pharmacy activity topic",
+										"enum": [
+											"01-Disease State Management/Drug Therapy",
+											"02-AIDS Therapy",
+											"03-Law Related to Pharmacy Practice",
+											"04-Pharmacy Administration",
+											"05-Patient Safety",
+											"06-Immunizations",
+											"07-Compounding",
+											"08-Pain Management",
+											"99-Additional Topic Areas"
+										]
+									},
+									"PharmacyLiveDate": {
+										"type": "object",
+										"description": "Container for live date information related to pharmacy certificate activities.",
+										"properties": {
+										  "LiveDateStart": {
+											"type": "string",
+											"format": "date",
+											"description": "Start date for the pharmacy certificate live session (YYYY-MM-DD)."
+										  },
+										  "LiveDateEnd": {
+											"type": "string",
+											"format": "date",
+											"description": "End date for the pharmacy certificate live session (YYYY-MM-DD)."
+										  }
+										},
+										"required": [
+										  "LiveDateStart"
+										]
+									},
+									"PharmacySequenceNumber": {
+										"type": "string",
+										"description": "Unique sequence number assigned to the pharmacy activity. 3-4 digit number starting from 1 to 9999 for each provider."
+									},
+									"UANPharmacy": {
+										"type": "string",
+										"description": "Universal Activity Number (UAN) assigned to pharmacists. UAN value in format of {Provider ID} –{Joint Providership Designator}-{Year of start date for activity}-{Sequence Number}-{Format Designator}-{Topic Designator}-{Target Audience}"
+									},
+									"UANPharmacyTech": {
+										"type": "string",
+										"description": "Universal Activity Number (UAN) assigned to pharmacy technicians. UAN value in format of {Provider ID} –{Joint Providership Designator}-{Year of start date for activity}-{Sequence Number}-{Format Designator}-{Topic Designator}-{Target Audience}"
+									},
+									"HasPharmacyRecertifications": {
+										"type": "string",
+										"description": "Indicates whether this activity is associated with a pharmacy certificate program.",
+										"enum": [
+										  "true",
+										  "false",
+										  "not sure"
+										]
+									},
+									"PharmacyRecertificationRequirements": {
+										"type": "array",
+										"description": "Requirements for pharmacy recertifications",
+										"items": {
+											"type": "object",
+											"properties": {
+											"PharmacyAudience": {
+												"type": "string",
+												"description": "Audience targeted for recertification",
+												"enum": [
+												"Pharmacists",
+												"Pharmacists Prescriptive Authority",
+												"Pharmacy Technicians"
+												]
+											},
+											"PharmacyRequirement": {
+												"type": "string",
+												"description": "Specific requirement topic for pharmacy recertification."
+											}
+											},
+											"required": [
+											"PharmacyAudience",
+											"PharmacyRequirement"
+											]
+										}
+									},
+									"HasPharmacyContentTags": {
+										"type": "string",
+										"enum": ["true", "false", "not sure"],
+										"description": "Indicates if activity is associated with pharmacy-specific state regulatory topics."
+									},
+									"PharmacyContentTags": {
+										"type": "object",
+										"properties": {
+											"PharmacyState": {
+												"type": "array",
+												"items": {
+													"type": "string",
+													"description": "US state abbreviation (See appendix D)."
+												}
+											},
+											"PharmacyContentTopic": {
+												"type": "array",
+												"items": {
+													"type": "string",
+													"description": "Pharmacy state regulatory content areas (See appendix J)."
+												}
+											}
+										},
+										"required": ["PharmacyState", "PharmacyContentTopic"]
+									},
 									"HasStateContentTags": {
-										"type": "boolean"
+										"type": "boolean",
+										"description": "Indicates if activity includes AMA PRA Category 1 credit state-specific content."
 									},
 									"StateContentTags": {
 										"type": "object",
@@ -462,41 +628,38 @@
 													"properties": {
 														"StateContentDomain": {
 															"type": "string",
-															"description": "Parent category for state content (e.g., 'Opioids')."
+															"description": "Domain category for state content (e.g., Opioids)."
 														},
 														"StateContentTopic": {
 															"type": "string",
-															"description": "Topic name (see Appendix J)."
+															"description": "Topic within the domain (See appendix K)."
 														}
 													},
-													"required": [
-														"StateContentDomain",
-														"StateContentTopic"
-													]
+													"required": ["StateContentDomain", "StateContentTopic"]
 												}
 											}
 										}
 									}
 								}
 							}
-						},
-						"required": [
-							"ReportDescription",
-							"ActivityDescription",
-							"Lom",
-							"healthcareMetadata",
-							"participationMetrics",
-							"XtensibleInfo"
-						]
-					}
-				}
-			},
-			"required": [
-				"MedicalEducationMetrics"
-			]
-		}
-	},
-	"required": [
-		"ACCMEActivities"
-	]
+						}
+					},
+					"required": [
+						"ReportDescription",
+						"ActivityDescription",
+						"Lom",
+						"healthcareMetadata",
+						"participationMetrics",
+						"XtensibleInfo"
+					]
+				},
+				"required": [
+					"MedicalEducationMetrics"
+				]
+			}
+		},
+		"required": [
+			"ACCMEActivities"
+		]
+	}
 }
