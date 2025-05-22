@@ -168,6 +168,13 @@
 														"type": "number",
 														"minimum": 0.25,
 														"description": "Accreditation credits awarded, increments of 0.25 or greater."
+													},
+													"nonAccreditedProvider": {
+														"type": "array",
+														"description": "One or more non-accredited joint providers.",
+														"items": {
+														  "type": "string"
+														}
 													}
 												},
 												"required": ["activityCertification", "numberOfCredits"]
