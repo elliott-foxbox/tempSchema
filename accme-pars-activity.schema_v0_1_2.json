@@ -495,17 +495,6 @@
 											]
 										}
 									},
-									"activityRecordAction": {
-										"type": "string",
-										"enum": [
-											"Add",
-											"Update",
-											"Delete"
-										]
-									},
-									"closeActivityRecord": {
-										"type": "boolean"
-									},
 									"PharmacyActivityType": {
 										"type": "string",
 										"description": "Specific pharmacy activity type",
@@ -531,23 +520,9 @@
 										]
 									},
 									"PharmacyLiveDate": {
-										"type": "object",
-										"description": "Container for live date information related to pharmacy certificate activities.",
-										"properties": {
-										  "LiveDateStart": {
-											"type": "string",
-											"format": "date",
-											"description": "Start date for the pharmacy certificate live session (YYYY-MM-DD)."
-										  },
-										  "LiveDateEnd": {
-											"type": "string",
-											"format": "date",
-											"description": "End date for the pharmacy certificate live session (YYYY-MM-DD)."
-										  }
-										},
-										"required": [
-										  "LiveDateStart"
-										]
+										"type": "string",
+										"format": "date",
+										"description": "Start date for the pharmacy certificate live session (YYYY-MM-DD)."
 									},
 									"PharmacySequenceNumber": {
 										"type": "string",
@@ -646,6 +621,17 @@
 												}
 											}
 										}
+									},
+									"activityRecordAction": {
+										"type": "string",
+										"enum": [
+											"Add",
+											"Update",
+											"Delete"
+										]
+									},
+									"closeActivityRecord": {
+										"type": "boolean"
 									}
 								}
 							}
