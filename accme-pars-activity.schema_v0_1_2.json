@@ -284,7 +284,6 @@
 			                            			"nurse",
 													"pharmacist",
 													"pharmacy technician",
-													"physician",
 													"physician assistant",
 													"psychologist",
 													"optometrist",
@@ -316,7 +315,7 @@
 										"type": "string",
 										"description": "Web services provider identifier"
 									},
-									"isInterprofessional ": {
+									"isInterprofessional": {
 										"type": "boolean",
 										"description": "True if activity is jointly accredited; false otherwise."
 									},
@@ -488,12 +487,12 @@
 											"REMSRelatedIdentifier": {
 												"type": "string",
 												"description": "If relevant, e.g. 'EG-######-###'."
-											},
-											"required": [
-												"REMSType",
-												"REMSRelatedIdentifier"
-											]
-										}
+											}
+										},
+										"required": [
+											"REMSType",
+											"REMSRelatedIdentifier"
+										]
 									},
 									"PharmacyActivityType": {
 										"type": "string",
@@ -642,17 +641,17 @@
 						"ActivityDescription",
 						"Lom",
 						"healthcareMetadata",
-						"participationMetrics",
+						"ParticipationMetrics",
 						"XtensibleInfo"
 					]
-				},
-				"required": [
-					"MedicalEducationMetrics"
-				]
-			}
-		},
-		"required": [
-			"ACCMEActivities"
-		]
-	}
+				}
+			},
+			"required": [
+				"MedicalEducationMetrics"
+			]
+		}
+	},
+	"required": [
+		"ACCMEActivities"
+	]
 }
