@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "https://example.org/accme-pars-learner-transcript.schema.json",
+	"$id": "https://docs.accme.org/pas/accme-pars-learner-transcript.schema.json",
 	"title": "ACCME Learner Transcript Schema",
 	"description": "Schema for learner transcripts, aligned with ACCME PARS Learner Reports conventions.",
 	"type": "object",

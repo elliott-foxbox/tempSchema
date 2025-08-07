@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "https://example.org/accme-pars-learner-reports.schema.json",
+	"$id": "https://docs.accme.org/pas/accme-pars-learner-reports.schema.json",
 	"title": "Activity Report Schemas",
 	"description": "JSON Schema mapping for activity reports and ACCMELearnerReports (with file-level attributes).",
 	"properties": {

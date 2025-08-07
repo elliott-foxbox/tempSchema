@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "https://example.org/accme-pars-activity.schema.json",
+	"$id": "https://docs.accme.org/pas/accme-pars-activity.schema.json",
 	"title": "ACCME PARS Activity JSON Schema",
 	"description": "JSON schema describing ACCME PARS Activity data, based on the Medbiquitous MEMS XML specification and ACCME extensions.",
 	"type": "object",
